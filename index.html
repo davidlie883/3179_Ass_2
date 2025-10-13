@@ -687,32 +687,32 @@ html,body{background:var(--bg); color:var(--text);}
 
   <!-- === PAGE 3 Choropleth Map Script === -->
   <script>
-    vegaEmbed("#mapCombo", "../json/choropleth1.json", { actions:false, renderer:"canvas" })
+    vegaEmbed("#mapCombo", "./json/choropleth1.json", { actions:false, renderer:"canvas" })
       .catch(err => console.error("Vega-Embed error:", err));
   </script>
 
 <!-- === PAGE 4 Host Nation Advantage === -->
 <script>
-  vegaEmbed("#hostBump", "../json/linegraph1.json", { actions:false, renderer:"canvas" })
+  vegaEmbed("#hostBump", "./json/linegraph1.json", { actions:false, renderer:"canvas" })
     .catch(err => console.error("Vega-Embed error (linegraph1):", err));
 </script>
 
 
 <!-- === PAGE 5 Stacked Bars: Top 10 medal composition === -->
 <script>
-  vegaEmbed("#page5Chart", "../json/stackedbars1.json", { actions:false, renderer:"canvas" })
+  vegaEmbed("#page5Chart", "./json/stackedbars1.json", { actions:false, renderer:"canvas" })
     .catch(e => console.error("Vega-Embed error (stackedbars1):", e));
 </script>
 
 <!-- === PAGE 6 Radar Chart === -->
 <script>
-  vegaEmbed("#radarChart1", "../json/radarchart1.json", { actions:false, renderer:"canvas" })
+  vegaEmbed("#radarChart1", "./json/radarchart1.json", { actions:false, renderer:"canvas" })
     .catch(err => console.error("Vega-Embed error (radarchart1):", err));
 </script>
 
 <!-- === PAGE 7 Gender Difference === -->
 <script>
-  vegaEmbed("#stackedArea1", "../json/stackedarea1.json", { actions:false })
+  vegaEmbed("#stackedArea1", "./json/stackedarea1.json", { actions:false })
     .catch(err => console.error("Vega-Embed error (stackedarea1):", err));
 </script>
 
