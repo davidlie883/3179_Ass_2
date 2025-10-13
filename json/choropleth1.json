@@ -3,7 +3,7 @@
   "width": 950,
   "height": 520,
   "background": "transparent",
-  "projection": {"type": "equalEarth"},
+  "projection": { "type": "equalEarth" },
 
   "params": [
     {
@@ -18,13 +18,7 @@
     {
       "name": "YearSelect",
       "value": 2016,
-      "bind": {
-        "input": "range",
-        "min": 1896,
-        "max": 2016,
-        "step": 4,
-        "name": "Year: "
-      }
+      "bind": { "input": "range", "min": 1896, "max": 2016, "step": 4, "name": "Year: " }
     }
   ],
 
@@ -32,35 +26,31 @@
     {
       "data": {
         "url": "https://raw.githubusercontent.com/FIT3179/Vega-Lite/main/2_symbol_map/js/WorldMapWithGraticules.topojson",
-        "format": {"type": "topojson", "feature": "ne_110m_graticules_30"}
+        "format": { "type": "topojson", "feature": "ne_110m_graticules_30" }
       },
-      "mark": {"type": "geoshape", "fill": null, "stroke": "#242a33", "strokeWidth": 0.6}
+      "mark": { "type": "geoshape", "fill": null, "stroke": "#242a33", "strokeWidth": 0.6 }
     },
-
     {
       "data": {
         "url": "https://raw.githubusercontent.com/FIT3179/Vega-Lite/main/3_choropleth_map/js/ne_110m_admin_0_countries.topojson",
-        "format": {"type": "topojson", "feature": "ne_110m_admin_0_countries"}
+        "format": { "type": "topojson", "feature": "ne_110m_admin_0_countries" }
       },
       "transform": [
-        {
-          "calculate": "upper(datum.properties && datum.properties.ISO_A3 ? datum.properties.ISO_A3 : (datum.properties && datum.properties.ADM0_A3 ? datum.properties.ADM0_A3 : ''))",
-          "as": "iso3"
-        },
-        {"filter": "datum.iso3 !== '' && datum.iso3 !== '---' && datum.iso3 !== '-99'"},
-        {"calculate": "toString(YearSelect)", "as": "year_str"},
+        { "calculate": "upper(datum.properties && datum.properties.ISO_A3 ? datum.properties.ISO_A3 : (datum.properties && datum.properties.ADM0_A3 ? datum.properties.ADM0_A3 : ''))", "as": "iso3" },
+        { "filter": "datum.iso3 !== '' && datum.iso3 !== '---' && datum.iso3 !== '-99'" },
+        { "calculate": "toString(YearSelect)", "as": "year_str" },
 
-        {"calculate": "datum.iso3 + '|' + datum.year_str + '|Gold'", "as": "key_gold"},
-        {"calculate": "datum.iso3 + '|' + datum.year_str + '|Silver'", "as": "key_silver"},
-        {"calculate": "datum.iso3 + '|' + datum.year_str + '|Bronze'", "as": "key_bronze"},
-        {"calculate": "datum.iso3 + '|' + datum.year_str + '|' + (MedalSelect=='All' ? 'Gold' : MedalSelect)", "as": "key_selected"},
+        { "calculate": "datum.iso3 + '|' + datum.year_str + '|Gold'", "as": "key_gold" },
+        { "calculate": "datum.iso3 + '|' + datum.year_str + '|Silver'", "as": "key_silver" },
+        { "calculate": "datum.iso3 + '|' + datum.year_str + '|Bronze'", "as": "key_bronze" },
+        { "calculate": "datum.iso3 + '|' + datum.year_str + '|' + (MedalSelect=='All' ? 'Gold' : MedalSelect)", "as": "key_selected" },
 
         {
           "lookup": "key_gold",
           "from": {
             "data": {
-              "url": "https://raw.githubusercontent.com/davidlie883/3179-Assignment2/main/datasets/olympic_medals_by_noc_year_counts.csv",
-              "format": {"type": "csv"}
+              "url": "./code/datasets/olympic_medals_by_noc_year_counts.csv",
+              "format": { "type": "csv" }
             },
             "key": "key_iso",
             "fields": ["medal_count"]
@@ -71,8 +61,8 @@
           "lookup": "key_silver",
           "from": {
             "data": {
-              "url": "https://raw.githubusercontent.com/davidlie883/3179-Assignment2/main/datasets/olympic_medals_by_noc_year_counts.csv",
-              "format": {"type": "csv"}
+              "url": "./code/datasets/olympic_medals_by_noc_year_counts.csv",
+              "format": { "type": "csv" }
             },
             "key": "key_iso",
             "fields": ["medal_count"]
@@ -83,8 +73,8 @@
           "lookup": "key_bronze",
           "from": {
             "data": {
-              "url": "https://raw.githubusercontent.com/davidlie883/3179-Assignment2/main/datasets/olympic_medals_by_noc_year_counts.csv",
-              "format": {"type": "csv"}
+              "url": "./code/datasets/olympic_medals_by_noc_year_counts.csv",
+              "format": { "type": "csv" }
             },
             "key": "key_iso",
             "fields": ["medal_count"]
@@ -95,8 +85,8 @@
           "lookup": "key_selected",
           "from": {
             "data": {
-              "url": "https://raw.githubusercontent.com/davidlie883/3179-Assignment2/main/datasets/olympic_medals_by_noc_year_counts.csv",
-              "format": {"type": "csv"}
+              "url": "./code/datasets/olympic_medals_by_noc_year_counts.csv",
+              "format": { "type": "csv" }
             },
             "key": "key_iso",
             "fields": ["medal_count", "NOC", "Year", "Medal"]
@@ -104,41 +94,35 @@
           "as": ["selected_raw", "NOC", "Year", "Medal"]
         },
 
-        {"calculate": "toNumber(isValid(datum.gold_raw) ? datum.gold_raw : 0)", "as": "gold"},
-        {"calculate": "toNumber(isValid(datum.silver_raw) ? datum.silver_raw : 0)", "as": "silver"},
-        {"calculate": "toNumber(isValid(datum.bronze_raw) ? datum.bronze_raw : 0)", "as": "bronze"},
-        {"calculate": "toNumber(isValid(datum.selected_raw) ? datum.selected_raw : 0)", "as": "selected_count"},
+        { "calculate": "toNumber(isValid(datum.gold_raw) ? datum.gold_raw : 0)", "as": "gold" },
+        { "calculate": "toNumber(isValid(datum.silver_raw) ? datum.silver_raw : 0)", "as": "silver" },
+        { "calculate": "toNumber(isValid(datum.bronze_raw) ? datum.bronze_raw : 0)", "as": "bronze" },
+        { "calculate": "toNumber(isValid(datum.selected_raw) ? datum.selected_raw : 0)", "as": "selected_count" },
 
-        {
-          "calculate": "MedalSelect == 'All' ? (datum.gold + datum.silver + datum.bronze) : datum.selected_count",
-          "as": "medals"
-        }
+        { "calculate": "MedalSelect == 'All' ? (datum.gold + datum.silver + datum.bronze) : datum.selected_count", "as": "medals" }
       ],
-      "mark": {"type": "geoshape", "stroke": "#242a33", "strokeWidth": 0.4},
+      "mark": { "type": "geoshape", "stroke": "#242a33", "strokeWidth": 0.4 },
       "encoding": {
         "color": {
           "field": "medals",
           "type": "quantitative",
           "title": "Number of Medals",
-          "scale": {
-            "range": ["#dbe9f6", "#1b3b73"],
-            "clamp": true
-          },
-          "legend": {"orient": "bottom", "direction": "horizontal"}
+          "scale": { "range": ["#dbe9f6", "#1b3b73"], "clamp": true },
+          "legend": { "orient": "bottom", "direction": "horizontal" }
         },
         "tooltip": [
-          {"field": "properties.NAME", "type": "nominal", "title": "Country"},
-          {"field": "iso3", "type": "nominal", "title": "NOC"},
-          {"field": "medals", "type": "quantitative", "title": "Medals"},
-          {"title": "Medal Type", "type": "nominal", "value": {"expr": "MedalSelect"}},
-          {"title": "Year", "type": "nominal", "value": {"expr": "toString(YearSelect)"}}
+          { "field": "properties.NAME", "type": "nominal", "title": "Country" },
+          { "field": "iso3", "type": "nominal", "title": "NOC/ISO3" },
+          { "field": "medals", "type": "quantitative", "title": "Medals" },
+          { "title": "Medal Type", "type": "nominal", "value": { "expr": "MedalSelect" } },
+          { "title": "Year", "type": "nominal", "value": { "expr": "toString(YearSelect)" } }
         ]
       }
     }
   ],
 
   "config": {
-    "view": {"stroke": null},
+    "view": { "stroke": null },
     "axis": {
       "domainColor": "#242a33",
       "tickColor": "#242a33",
@@ -146,7 +130,7 @@
       "titleColor": "#e8eaed",
       "gridColor": "#242a33"
     },
-    "legend": {"labelColor": "#e8eaed", "titleColor": "#e8eaed"},
+    "legend": { "labelColor": "#e8eaed", "titleColor": "#e8eaed" },
     "background": "transparent"
   }
 }
