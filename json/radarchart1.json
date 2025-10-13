@@ -18,7 +18,7 @@
   ],
 
   "data": {
-    "url": "./datasets/athlete_events.csv",
+    "url": "./code/datasets/athlete_events.csv",
     "format": { "type": "csv" }
   },
 
@@ -38,7 +38,7 @@
     {
       "lookup": "ath_key",
       "from": {
-        "data": { "url": "./datasets/athlete_events.csv", "format": { "type": "csv" } },
+        "data": { "url": "./code/datasets/athlete_events.csv", "format": { "type": "csv" } },
         "transform": [
           { "filter": "datum.Season == 'Summer'" },
           { "calculate": "datum.Name + '|' + datum.NOC", "as": "ath_key" },
@@ -68,10 +68,7 @@
     { "joinaggregate": [{ "op": "max", "field": "value", "as": "metric_max" }], "groupby": ["metric"] },
     { "calculate": "datum.metric_max > 0 ? datum.value / datum.metric_max : 0", "as": "norm" },
 
-    {
-      "calculate": "datum.metric == 'Gold' ? 0 : datum.metric == 'Silver' ? 1 : datum.metric == 'Bronze' ? 2 : datum.metric == 'Total' ? 3 : 4",
-      "as": "m_order"
-    },
+    { "calculate": "datum.metric == 'Gold' ? 0 : datum.metric == 'Silver' ? 1 : datum.metric == 'Bronze' ? 2 : datum.metric == 'Total' ? 3 : 4", "as": "m_order" },
     { "calculate": "6.28318 * (datum.m_order / 5)", "as": "theta" },
     { "calculate": "datum.norm * 120", "as": "r" },
     { "calculate": "cos(datum.theta) * datum.r", "as": "x" },
@@ -130,19 +127,9 @@
       }
     ],
     "config": {
-      "header": {
-        "labelColor": "#ffffff",
-        "labelFontSize": 14,
-        "labelFontWeight": "bold",
-        "labelPadding": 6
-      },
+      "header": { "labelColor": "#ffffff", "labelFontSize": 14, "labelFontWeight": "bold", "labelPadding": 6 },
       "view": { "stroke": "#242a33", "cornerRadius": 12 },
-      "axis": {
-        "domainColor": "#242a33",
-        "tickColor": "#242a33",
-        "labelColor": "#e8eaed",
-        "titleColor": "#e8eaed"
-      }
+      "axis": { "domainColor": "#242a33", "tickColor": "#242a33", "labelColor": "#e8eaed", "titleColor": "#e8eaed" }
     }
   }
 }

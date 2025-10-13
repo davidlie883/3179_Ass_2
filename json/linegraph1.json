@@ -1,6 +1,5 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-
   "background": "transparent",
   "width": "container",
   "height": "container",
@@ -13,31 +12,25 @@
       "value": "AUS",
       "bind": {
         "input": "select",
-        "options": [
-          "AUS","USA","CHN","JPN","GBR","GER","FRG","RUS","URS","CAN","ITA","FRA","BRA","KOR","ESP","NED","SWE","FIN","GRE","MEX","BEL"
-        ],
+        "options": ["AUS","USA","CHN","JPN","GBR","GER","FRG","RUS","URS","CAN","ITA","FRA","BRA","KOR","ESP","NED","SWE","FIN","GRE","MEX","BEL"],
         "name": "Country (NOC): "
       }
     }
   ],
 
   "data": {
-    "url": "https://raw.githubusercontent.com/davidlie883/3179-Assignment2/main/datasets/olympic_medals_by_noc_year_counts.csv",
+    "url": "./code/datasets/olympic_medals_by_noc_year_counts.csv",
     "format": { "type": "csv" }
   },
 
   "transform": [
     { "filter": "datum.Medal === 'Gold' || datum.Medal === 'Silver' || datum.Medal === 'Bronze'" },
 
-    {
-      "aggregate": [{ "op": "sum", "field": "medal_count", "as": "Total" }],
-      "groupby": ["NOC", "Year"]
-    },
+    { "aggregate": [{ "op": "sum", "field": "medal_count", "as": "Total" }], "groupby": ["NOC", "Year"] },
 
     { "filter": "datum.NOC === countrySel" },
 
     { "calculate": "datum.NOC + '|' + toString(datum.Year)", "as": "key_host" },
-
 
     {
       "lookup": "key_host",
@@ -67,14 +60,8 @@
     {
       "mark": { "type": "line", "interpolate": "monotone", "strokeWidth": 3 },
       "encoding": {
-        "x": {
-          "field": "Year", "type": "temporal",
-          "axis": { "labelColor": "#e8eaed", "gridColor": "#242a33", "title": null }
-        },
-        "y": {
-          "field": "Total", "type": "quantitative",
-          "axis": { "labelColor": "#e8eaed", "gridColor": "#242a33", "title": "Total medals" }
-        },
+        "x": { "field": "Year", "type": "temporal", "axis": { "labelColor": "#e8eaed", "gridColor": "#242a33", "title": null } },
+        "y": { "field": "Total", "type": "quantitative", "axis": { "labelColor": "#e8eaed", "gridColor": "#242a33", "title": "Total medals" } },
         "color": { "value": "#6aa9ff" }
       }
     },
@@ -97,19 +84,11 @@
       "layer": [
         {
           "mark": { "type": "point", "filled": false, "strokeWidth": 3, "size": 260 },
-          "encoding": {
-            "x": { "field": "Year", "type": "temporal" },
-            "y": { "field": "Total", "type": "quantitative" },
-            "color": { "value": "#cfe1ff" }
-          }
+          "encoding": { "x": { "field": "Year", "type": "temporal" }, "y": { "field": "Total", "type": "quantitative" }, "color": { "value": "#cfe1ff" } }
         },
         {
           "mark": { "type": "point", "filled": true, "size": 200, "opacity": 0.9 },
-          "encoding": {
-            "x": { "field": "Year", "type": "temporal" },
-            "y": { "field": "Total", "type": "quantitative" },
-            "color": { "value": "#9ec2ff" }
-          }
+          "encoding": { "x": { "field": "Year", "type": "temporal" }, "y": { "field": "Total", "type": "quantitative" }, "color": { "value": "#9ec2ff" } }
         }
       ]
     }
@@ -117,13 +96,7 @@
 
   "config": {
     "view": { "stroke": null },
-    "axis": {
-      "domainColor": "#242a33",
-      "tickColor": "#242a33",
-      "labelColor": "#e8eaed",
-      "titleColor": "#e8eaed",
-      "gridColor": "#242a33"
-    },
+    "axis": { "domainColor": "#242a33", "tickColor": "#242a33", "labelColor": "#e8eaed", "titleColor": "#e8eaed", "gridColor": "#242a33" },
     "legend": { "labelColor": "#e8eaed", "titleColor": "#e8eaed" }
   }
 }

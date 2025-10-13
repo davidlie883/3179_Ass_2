@@ -21,25 +21,19 @@
   ],
 
   "data": {
-    "url": "https://raw.githubusercontent.com/davidlie883/3179-Assignment2/main/datasets/olympic_medals_by_noc_year_counts.csv",
+    "url": "./code/datasets/olympic_medals_by_noc_year_counts.csv",
     "format": { "type": "csv" }
   },
 
   "transform": [
     { "filter": "datum.Medal === 'Gold' || datum.Medal === 'Silver' || datum.Medal === 'Bronze'" },
     { "filter": "toNumber(datum.Year) == YearBar" },
-    {
-      "filter": "SeasonSel === 'All' ? true : datum.Season === SeasonSel"
-    },
+    { "filter": "SeasonSel === 'All' ? true : datum.Season === SeasonSel" },
 
     { "aggregate": [{ "op": "sum", "field": "medal_count", "as": "count" }], "groupby": ["NOC","Medal"] },
-
     { "joinaggregate": [{ "op": "sum", "field": "count", "as": "Total" }], "groupby": ["NOC"] },
 
-    {
-      "window": [{ "op": "rank", "as": "rk" }],
-      "sort": [{ "field": "Total", "order": "descending" }]
-    },
+    { "window": [{ "op": "rank", "as": "rk" }], "sort": [{ "field": "Total", "order": "descending" }] },
     { "filter": "datum.rk <= 10" }
   ],
 
@@ -63,7 +57,13 @@
       "field": "Medal",
       "type": "nominal",
       "scale": { "domain": ["Gold","Silver","Bronze"], "range": ["#FFD166","#C0C0C0","#CD7F32"] },
-      "legend": { "orient": "bottom", "direction": "horizontal", "labelColor": "#e8eaed", "title": "Medal" }
+      "legend": {
+        "orient": "bottom",
+        "direction": "horizontal",
+        "labelColor": "#e8eaed",
+        "title": "Medal",
+        "titleColor": "#e8eaed"
+      }
     },
     "tooltip": [
       { "field": "NOC", "title": "NOC" },
@@ -75,7 +75,13 @@
 
   "config": {
     "view": { "stroke": null },
-    "axis": { "domainColor": "#242a33", "tickColor": "#242a33", "labelColor": "#e8eaed", "titleColor": "#e8eaed", "gridColor": "#242a33" },
+    "axis": {
+      "domainColor": "#242a33",
+      "tickColor": "#242a33",
+      "labelColor": "#e8eaed",
+      "titleColor": "#e8eaed",
+      "gridColor": "#242a33"
+    },
     "legend": { "labelColor": "#e8eaed", "titleColor": "#e8eaed" }
   }
 }
