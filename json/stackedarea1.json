@@ -1,0 +1,98 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "background": "transparent",
+  "width": "container",
+  "height": 420,
+  "autosize": {"type": "fit", "contains": "padding"},
+  "padding": {"bottom": 28},
+
+  "params": [
+    {
+      "name": "NOCSel",
+      "value": "All",
+      "bind": {
+        "input": "select",
+        "options": ["All","AUS","USA","CHN","JPN","GBR","GER","RUS","CAN","BRA","ITA","FRA","KOR","ESP","NED","SWE","FIN","GRE"],
+        "name": "Country (NOC): "
+      }
+    }
+  ],
+
+  "data": {"url": "./datasets/athlete_events.csv", "format": {"type": "csv"}},
+
+  "transform": [
+    {"filter": "datum.Season == 'Summer'"},
+    {"filter": "NOCSel == 'All' ? true : datum.NOC == NOCSel"},
+    {"calculate": "toNumber(datum.Year)", "as": "YearNum"},
+    {"filter": "isValid(datum.Sex) && (datum.Sex == 'M' || datum.Sex == 'F')"}
+  ],
+
+  "vconcat": [
+    {
+      "title": {"text": "Participation share by gender over time", "color": "#ffffff", "fontWeight": 700, "anchor": "start"},
+      "transform": [
+        {"aggregate": [{"op": "distinct", "field": "Name", "as": "Athletes"}], "groupby": ["YearNum","Sex"]}
+      ],
+      "mark": {"type": "area"},
+      "encoding": {
+        "x": {
+          "field": "YearNum", "type": "quantitative",
+          "axis": {"gridColor": "#242a33", "labelColor": "#e8eaed", "title": null},
+          "sort": "ascending"
+        },
+        "y": {
+          "field": "Athletes", "type": "quantitative", "stack": "normalize",
+          "axis": {"format": ".0%", "gridColor": "#242a33", "labelColor": "#e8eaed", "title": "Share of participants"}
+        },
+        "color": {
+          "field": "Sex", "type": "nominal",
+          "scale": {"domain": ["F","M"], "range": ["#f2a7d3","#6aa9ff"]},
+          "legend": {"orient": "bottom", "direction": "horizontal", "labelColor": "#e8eaed", "title": "Gender", "titleColor": "#e8eaed"}
+        },
+        "order": {"field": "YearNum", "type": "quantitative"},
+        "tooltip": [
+          {"field": "YearNum", "type": "quantitative", "title": "Year"},
+          {"field": "Sex", "title": "Gender"},
+          {"field": "Athletes", "title": "Athletes"}
+        ]
+      }
+    },
+
+    {
+      "title": {"text": "Medal share by gender over time", "color": "#ffffff", "fontWeight": 700, "anchor": "start"},
+      "transform": [
+        {"filter": "datum.Medal == 'Gold' || datum.Medal == 'Silver' || datum.Medal == 'Bronze'"},
+        {"aggregate": [{"op": "count", "as": "Medals"}], "groupby": ["YearNum","Sex"]}
+      ],
+      "mark": {"type": "area"},
+      "encoding": {
+        "x": {
+          "field": "YearNum", "type": "quantitative",
+          "axis": {"gridColor": "#242a33", "labelColor": "#e8eaed", "title": null},
+          "sort": "ascending"
+        },
+        "y": {
+          "field": "Medals", "type": "quantitative", "stack": "normalize",
+          "axis": {"format": ".0%", "gridColor": "#242a33", "labelColor": "#e8eaed", "title": "Share of medals"}
+        },
+        "color": {
+          "field": "Sex", "type": "nominal",
+          "scale": {"domain": ["F","M"], "range": ["#f2a7d3","#6aa9ff"]},
+          "legend": null
+        },
+        "order": {"field": "YearNum", "type": "quantitative"},
+        "tooltip": [
+          {"field": "YearNum", "type": "quantitative", "title": "Year"},
+          {"field": "Sex", "title": "Gender"},
+          {"field": "Medals", "title": "Medals"}
+        ]
+      }
+    }
+  ],
+
+  "config": {
+    "view": {"stroke": null},
+    "axis": {"domainColor": "#242a33","tickColor": "#242a33","labelColor": "#e8eaed","titleColor": "#e8eaed","gridColor": "#242a33"},
+    "legend": {"labelColor": "#e8eaed", "titleColor": "#e8eaed"}
+  }
+}

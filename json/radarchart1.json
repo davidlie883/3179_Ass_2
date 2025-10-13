@@ -1,0 +1,148 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "background": "transparent",
+  "width": "container",
+  "height": 360,
+  "autosize": { "type": "fit", "contains": "padding" },
+
+  "params": [
+    {
+      "name": "CountrySel",
+      "value": "AUS",
+      "bind": {
+        "input": "select",
+        "options": ["AUS","USA","CHN","JPN","GBR","GER","RUS","CAN","BRA","ITA","FRA","JAM","KEN","NED","ESP","SWE"],
+        "name": "Country (NOC): "
+      }
+    }
+  ],
+
+  "data": {
+    "url": "./datasets/athlete_events.csv",
+    "format": { "type": "csv" }
+  },
+
+  "transform": [
+    { "filter": "datum.Season == 'Summer'" },
+    { "filter": "datum.Medal == 'Gold' || datum.Medal == 'Silver' || datum.Medal == 'Bronze'" },
+
+    { "aggregate": [{ "op": "count", "as": "cnt" }], "groupby": ["Name","NOC","Medal"] },
+    { "pivot": "Medal", "value": "cnt", "groupby": ["Name","NOC"] },
+
+    { "calculate": "toNumber(isValid(datum.Gold) ? datum.Gold : 0)",   "as": "Gold" },
+    { "calculate": "toNumber(isValid(datum.Silver) ? datum.Silver : 0)","as": "Silver" },
+    { "calculate": "toNumber(isValid(datum.Bronze) ? datum.Bronze : 0)","as": "Bronze" },
+    { "calculate": "datum.Gold + datum.Silver + datum.Bronze",          "as": "Total" },
+
+    { "calculate": "datum.Name + '|' + datum.NOC", "as": "ath_key" },
+    {
+      "lookup": "ath_key",
+      "from": {
+        "data": { "url": "./datasets/athlete_events.csv", "format": { "type": "csv" } },
+        "transform": [
+          { "filter": "datum.Season == 'Summer'" },
+          { "calculate": "datum.Name + '|' + datum.NOC", "as": "ath_key" },
+          { "aggregate": [{ "op": "distinct", "field": "Year", "as": "Appearances" }], "groupby": ["ath_key"] }
+        ],
+        "key": "ath_key",
+        "fields": ["Appearances"]
+      },
+      "as": ["Appearances"]
+    },
+    { "calculate": "toNumber(isValid(datum.Appearances) ? datum.Appearances : 0)", "as": "Appearances" },
+
+    { "filter": "datum.NOC == CountrySel" },
+
+    {
+      "window": [{ "op": "rank", "as": "rk" }],
+      "sort": [
+        { "field": "NOC", "order": "ascending" },
+        { "field": "Total", "order": "descending" }
+      ],
+      "groupby": ["NOC"]
+    },
+    { "filter": "datum.rk <= 3" },
+
+    { "fold": ["Gold","Silver","Bronze","Total","Appearances"], "as": ["metric","value"] },
+
+    { "joinaggregate": [{ "op": "max", "field": "value", "as": "metric_max" }], "groupby": ["metric"] },
+    { "calculate": "datum.metric_max > 0 ? datum.value / datum.metric_max : 0", "as": "norm" },
+
+    {
+      "calculate": "datum.metric == 'Gold' ? 0 : datum.metric == 'Silver' ? 1 : datum.metric == 'Bronze' ? 2 : datum.metric == 'Total' ? 3 : 4",
+      "as": "m_order"
+    },
+    { "calculate": "6.28318 * (datum.m_order / 5)", "as": "theta" },
+    { "calculate": "datum.norm * 120", "as": "r" },
+    { "calculate": "cos(datum.theta) * datum.r", "as": "x" },
+    { "calculate": "sin(datum.theta) * datum.r", "as": "y" }
+  ],
+
+  "facet": {
+    "field": "Name",
+    "type": "nominal",
+    "columns": 3,
+    "title": null,
+    "header": {
+      "labelColor": "#ffffff",
+      "labelFontSize": 14,
+      "labelFontWeight": "bold",
+      "labelPadding": 6,
+      "labelOrient": "top"
+    }
+  },
+
+  "spec": {
+    "layer": [
+      {
+        "mark": { "type": "line", "strokeWidth": 2 },
+        "encoding": {
+          "x": { "field": "x", "type": "quantitative", "axis": null, "scale": { "domain": [-140, 140] } },
+          "y": { "field": "y", "type": "quantitative", "axis": null, "scale": { "domain": [-140, 140] } },
+          "order": { "field": "m_order" },
+          "color": { "value": "#6aa9ff" }
+        }
+      },
+      {
+        "mark": { "type": "point", "filled": true, "size": 80 },
+        "encoding": {
+          "x": { "field": "x", "type": "quantitative" },
+          "y": { "field": "y", "type": "quantitative" },
+          "color": { "value": "#9ec2ff" },
+          "tooltip": [
+            { "field": "Name", "title": "Athlete" },
+            { "field": "NOC", "title": "NOC" },
+            { "field": "metric", "title": "Metric" },
+            { "field": "value", "title": "Value" }
+          ]
+        }
+      },
+      {
+        "transform": [
+          { "aggregate": [{ "op": "max", "field": "norm", "as": "_dummy" }], "groupby": ["metric","m_order","theta","x","y"] }
+        ],
+        "mark": { "type": "text", "align": "center", "baseline": "middle", "dy": -10, "fontSize": 12, "color": "#cfe1ff" },
+        "encoding": {
+          "x": { "field": "x", "type": "quantitative" },
+          "y": { "field": "y", "type": "quantitative" },
+          "text": { "field": "metric" }
+        }
+      }
+    ],
+    "config": {
+      "header": {
+        "labelColor": "#ffffff",
+        "labelFontSize": 14,
+        "labelFontWeight": "bold",
+        "labelPadding": 6
+      },
+      "view": { "stroke": "#242a33", "cornerRadius": 12 },
+      "axis": {
+        "domainColor": "#242a33",
+        "tickColor": "#242a33",
+        "labelColor": "#e8eaed",
+        "titleColor": "#e8eaed"
+      }
+    }
+  }
+}

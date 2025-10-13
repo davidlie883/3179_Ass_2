@@ -1,0 +1,129 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+
+  "background": "transparent",
+  "width": "container",
+  "height": "container",
+  "autosize": { "type": "fit", "contains": "padding" },
+  "padding": { "bottom": 28 },
+
+  "params": [
+    {
+      "name": "countrySel",
+      "value": "AUS",
+      "bind": {
+        "input": "select",
+        "options": [
+          "AUS","USA","CHN","JPN","GBR","GER","FRG","RUS","URS","CAN","ITA","FRA","BRA","KOR","ESP","NED","SWE","FIN","GRE","MEX","BEL"
+        ],
+        "name": "Country (NOC): "
+      }
+    }
+  ],
+
+  "data": {
+    "url": "https://raw.githubusercontent.com/davidlie883/3179-Assignment2/main/datasets/olympic_medals_by_noc_year_counts.csv",
+    "format": { "type": "csv" }
+  },
+
+  "transform": [
+    { "filter": "datum.Medal === 'Gold' || datum.Medal === 'Silver' || datum.Medal === 'Bronze'" },
+
+    {
+      "aggregate": [{ "op": "sum", "field": "medal_count", "as": "Total" }],
+      "groupby": ["NOC", "Year"]
+    },
+
+    { "filter": "datum.NOC === countrySel" },
+
+    { "calculate": "datum.NOC + '|' + toString(datum.Year)", "as": "key_host" },
+
+
+    {
+      "lookup": "key_host",
+      "from": {
+        "data": {
+          "values": [
+            {"key_host":"GRE|1896"}, {"key_host":"FRA|1900"}, {"key_host":"USA|1904"}, {"key_host":"GBR|1908"},
+            {"key_host":"SWE|1912"}, {"key_host":"BEL|1920"}, {"key_host":"FRA|1924"}, {"key_host":"NED|1928"},
+            {"key_host":"USA|1932"}, {"key_host":"GER|1936"}, {"key_host":"GBR|1948"}, {"key_host":"FIN|1952"},
+            {"key_host":"AUS|1956"}, {"key_host":"ITA|1960"}, {"key_host":"JPN|1964"}, {"key_host":"MEX|1968"},
+            {"key_host":"FRG|1972"}, {"key_host":"GER|1972"}, {"key_host":"CAN|1976"}, {"key_host":"URS|1980"},
+            {"key_host":"USA|1984"}, {"key_host":"KOR|1988"}, {"key_host":"ESP|1992"}, {"key_host":"USA|1996"},
+            {"key_host":"AUS|2000"}, {"key_host":"GRE|2004"}, {"key_host":"CHN|2008"}, {"key_host":"GBR|2012"},
+            {"key_host":"BRA|2016"}, {"key_host":"JPN|2020"}
+          ]
+        },
+        "key": "key_host",
+        "fields": ["key_host"]
+      },
+      "as": ["host_match"]
+    },
+
+    { "calculate": "isValid(datum.host_match) ? true : false", "as": "Host" }
+  ],
+
+  "layer": [
+    {
+      "mark": { "type": "line", "interpolate": "monotone", "strokeWidth": 3 },
+      "encoding": {
+        "x": {
+          "field": "Year", "type": "temporal",
+          "axis": { "labelColor": "#e8eaed", "gridColor": "#242a33", "title": null }
+        },
+        "y": {
+          "field": "Total", "type": "quantitative",
+          "axis": { "labelColor": "#e8eaed", "gridColor": "#242a33", "title": "Total medals" }
+        },
+        "color": { "value": "#6aa9ff" }
+      }
+    },
+    {
+      "mark": { "type": "point", "filled": true, "size": 60, "opacity": 0.7 },
+      "encoding": {
+        "x": { "field": "Year", "type": "temporal" },
+        "y": { "field": "Total", "type": "quantitative" },
+        "color": { "value": "#9ec2ff" },
+        "tooltip": [
+          { "field": "NOC", "title": "NOC" },
+          { "field": "Year", "type": "temporal", "title": "Year" },
+          { "field": "Total", "title": "Total medals" },
+          { "field": "Host", "title": "Host year" }
+        ]
+      }
+    },
+    {
+      "transform": [ { "filter": "datum.Host == true" } ],
+      "layer": [
+        {
+          "mark": { "type": "point", "filled": false, "strokeWidth": 3, "size": 260 },
+          "encoding": {
+            "x": { "field": "Year", "type": "temporal" },
+            "y": { "field": "Total", "type": "quantitative" },
+            "color": { "value": "#cfe1ff" }
+          }
+        },
+        {
+          "mark": { "type": "point", "filled": true, "size": 200, "opacity": 0.9 },
+          "encoding": {
+            "x": { "field": "Year", "type": "temporal" },
+            "y": { "field": "Total", "type": "quantitative" },
+            "color": { "value": "#9ec2ff" }
+          }
+        }
+      ]
+    }
+  ],
+
+  "config": {
+    "view": { "stroke": null },
+    "axis": {
+      "domainColor": "#242a33",
+      "tickColor": "#242a33",
+      "labelColor": "#e8eaed",
+      "titleColor": "#e8eaed",
+      "gridColor": "#242a33"
+    },
+    "legend": { "labelColor": "#e8eaed", "titleColor": "#e8eaed" }
+  }
+}
