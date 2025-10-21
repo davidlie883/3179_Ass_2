@@ -649,11 +649,31 @@ html,body{background:var(--bg); color:var(--text);}
 }
 
 /* page 9 */
-#inequality .center-vis .vega-bindings{
-  display:flex; flex-wrap:wrap; justify-content:center; align-items:center;
-  gap:12px 16px; margin:12px 0 0; padding-top:10px; border-top:1px solid var(--border);
+#inequality .center-vis {
+  padding: 16px 16px 24px;          /* trim extra space */
 }
-#inequality .center-vis .vega-bindings input[type="range"]{ width:min(520px,80vw); }
+
+#inequality .center-vis > .vega-embed {
+  margin: 0 auto;                   /* center the SVG/canvas */
+  max-width: 920px;                 /* keep it readable */
+  width: 100%;
+}
+
+#inequality .center-vis .vega-bindings{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap: 12px 16px;
+  margin: 10px auto 0;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);  /* subtle divider above controls */
+  max-width: 920px;
+}
+
+#inequality .center-vis .vega-bindings input[type="range"]{
+  width: min(680px, 85vw);          /* tidy slider */
+  accent-color: var(--accent);
+}
 
 /* === CONCLUSION SECTION === */
 .conclusion {
@@ -1061,7 +1081,6 @@ html,body{background:var(--bg); color:var(--text);}
   </div>
 </section>
 
-<!-- conclusion -->
  <!-- FINAL SECTION — Conclusion -->
 <section class="conclusion">
   <div class="conclusion-inner">
@@ -1076,8 +1095,8 @@ html,body{background:var(--bg); color:var(--text);}
       a reflection of how far the world has come in giving every nation  
       and every athlete a chance to stand beneath the same flame.  
       <br><br>
-      The Olympics, then, are more than sport. They are a map of us —  
-      of progress, pride, and the pursuit of belonging on a global stage.
+      The Olympics, then, are more than sport. They are a map of us.  
+      Of progress, pride, and the pursuit of belonging on a global stage.
     </p>
   </div>
 </section>
@@ -1116,9 +1135,6 @@ html,body{background:var(--bg); color:var(--text);}
   vegaEmbed("#lorenz1", "./json/lorenz1.json", { actions:false, renderer:"canvas" })
     .catch(err => console.error("Vega-Embed error (lorenz1):", err));
 </script>
-
-
-
 
   <script>
     document.addEventListener('click', (e)=>{
