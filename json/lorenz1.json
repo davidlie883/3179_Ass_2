@@ -34,7 +34,13 @@
   ],
   "vconcat": [
     {
-      "title": {"text": "Medal inequality among countries (Lorenz curve)", "color": "#ffffff", "fontWeight": 700, "anchor": "start"},
+      "title": {
+  "text": "How Olympic Success Concentrates Among Nations",
+  "anchor": "middle",
+  "color": "#e8eaed",
+  "fontSize": 16,
+  "fontWeight": "bold"
+},
       "layer": [
         {
           "mark": {"type": "line", "strokeDash": [5,4], "opacity": 0.6},

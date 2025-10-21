@@ -122,74 +122,74 @@ html,body{
   max-width: 56ch;
 }
 
-/* === MAP CARD (robust layout) === */
-#global-podium .split-vis{
-  display: grid;                  /* 1x1 grid: chart and controls stack */
-  grid-template-rows: 1fr auto;   /* map fills, controls sit at bottom */
+/* MAPPPPPPP */
+/* === MAP CARD FINAL CLEAN VERSION === */
+
+/* main container for map + controls */
+#global-podium .split-vis {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  min-height: 560px;              /* enough height for legend + map + controls */
+  padding: 16px;
+  gap: 12px;
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: 18px;
-  height: clamp(420px, 64svh, 860px);
-  padding: 16px;
   overflow: hidden;
-  box-shadow: 0 8px 28px rgba(0,0,0,.35);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
 }
 
-/* map container fills the first row */
-#mapCombo{
-  grid-row: 1 / 2;
-  width: 100%;
-  height: 100%;
-  min-height: 380px;
-  display: grid;                  /* ensure embed stretches */
+/* map area (Vega embed) */
+#mapCombo {
+  flex: 1 1 auto;
+  display: block;
+  min-height: 420px;
+  margin-bottom: 16px;            /* small gap before controls */
 }
 
-/* make the embedded canvas/svg fill */
-#mapCombo > .vega-embed{
-  grid-area: 1 / 1;
-  width: 100%;
-  height: 100%;
-}
+#mapCombo .vega-embed,
 #mapCombo .vega-embed canvas,
-#mapCombo .vega-embed svg{
+#mapCombo .vega-embed svg {
   width: 100% !important;
-  height: 100% !important;
+  height: auto !important;
+  max-width: 100%;
 }
 
-/* controls: wherever Vega puts them, force them into row 2 */
-#mapCombo > .vega-bindings,
-#mapCombo .vega-bindings,
-#global-podium .split-vis > .vega-bindings{
-  grid-row: 2 / 3;                /* bottom row of the card */
-  align-self: end;
-  justify-self: center;
-
-  width: 100%;
-  max-width: 1100px;
+/* unified styling for controls (works for .map-controls or .vega-bindings) */
+.map-controls,
+#global-podium .split-vis .vega-bindings {
+  flex: 0 0 auto;
   display: flex !important;
-  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  gap: 14px 18px;
-  margin-top: 12px;
+  gap: 18px 22px;
+  flex-wrap: wrap;
   padding-top: 10px;
-  border-top: 1px solid var(--border);
-
-  /* subtle legibility ramp */
-  background: linear-gradient(to top, rgba(11,12,16,.65), rgba(11,12,16,0));
-  backdrop-filter: blur(1px);
+  border-top: 1px solid transparent;   /* invisible divider for spacing */
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-radius: 0 0 12px 12px;
 }
 
-/* tidy labels/inputs */
-#global-podium .split-vis .vega-bindings label{
+/* labels */
+.map-controls label,
+#global-podium .split-vis .vega-bindings label {
   color: var(--muted);
-  font-size: .9rem;
+  font-size: 0.9rem;
   margin-right: 6px;
 }
-#global-podium .split-vis .vega-bindings input[type="range"]{
+
+/* sliders */
+.map-controls input[type="range"],
+#global-podium .split-vis .vega-bindings input[type="range"] {
   width: min(560px, 70vw);
   accent-color: var(--accent);
+  margin-top: 4px;  /* subtle downward nudge */
 }
+
 
 
 /* === PAGE 4: Host Advantage === */
@@ -656,7 +656,6 @@ html,body{background:var(--bg); color:var(--text);}
 #inequality .center-vis .vega-bindings input[type="range"]{ width:min(520px,80vw); }
 
 /* === CONCLUSION SECTION === */
-/* === CONCLUSION SECTION (fixed line width) === */
 .conclusion {
   min-height: 100svh;
   display: flex;
@@ -772,269 +771,6 @@ html,body{background:var(--bg); color:var(--text);}
   }
 }
 
-/* MAPPPPPPP */
-
-/* MAP: let Vega control the size (no forced 100% height) */
-#global-podium .split-vis{
-  position: relative;
-  padding: 16px 16px 96px;           /* reserve space for controls */
-  overflow: hidden;
-}
-
-#mapCombo{
-  display: block;
-  height: auto;                      /* don’t stretch the canvas */
-}
-
-/* don’t force the embed to 100% height; just cap width */
-#mapCombo .vega-embed,
-#mapCombo .vega-embed canvas,
-#mapCombo .vega-embed svg{
-  width: 100% !important;
-  height: auto !important;
-  max-width: 100%;
-}
-
-/* controls: catch both placements and pin to bottom */
-#mapCombo > .vega-bindings,
-#global-podium .split-vis > .vega-bindings,
-#global-podium .split-vis .vega-bindings{
-  position: absolute !important;
-  left: 16px; right: 16px; bottom: 16px;
-  display: flex !important;
-  justify-content: center; align-items: center;
-  gap: 14px 18px; flex-wrap: wrap;
-  padding-top: 10px; border-top: 1px solid var(--border);
-  background: linear-gradient(to top, rgba(11,12,16,.7), rgba(11,12,16,0));
-  z-index: 3;
-}
-
-#global-podium .split-vis .vega-bindings label{
-  color: var(--muted); font-size: .9rem; margin-right: 6px;
-}
-#global-podium .split-vis .vega-bindings input[type="range"]{
-  width: min(560px, 70vw); accent-color: var(--accent);
-}
-
-/* ==== MAP CONTROLS — final, robust layout ==== */
-
-/* Make the map card a 2-row grid:
-   row 1 = map, row 2 = controls  */
-#global-podium .split-vis{
-  display: grid;
-  grid-template-rows: 1fr auto;
-  gap: 10px;
-  padding: 16px;                    /* no extra bottom padding needed */
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  overflow: hidden;
-  box-shadow: 0 8px 28px rgba(0,0,0,.35);
-}
-
-/* Map container fills row 1 */
-#mapCombo{
-  grid-row: 1 / 2;
-  width: 100%;
-  min-height: 380px;
-}
-
-/* Let Vega size the graphic — don't stretch its height */
-#mapCombo .vega-embed,
-#mapCombo .vega-embed canvas,
-#mapCombo .vega-embed svg{
-  width: 100% !important;
-  height: auto !important;
-  max-width: 100%;
-}
-
-/* Wherever Vega puts the controls, force them into row 2
-   and lay them out centered in one neat row (wrapping if needed). */
-#mapCombo + .vega-bindings,
-#mapCombo > .vega-bindings,
-#global-podium .split-vis > .vega-bindings{
-  grid-row: 2 / 3 !important;       /* bottom row of card */
-  position: static !important;      /* cancel any absolute rules */
-  width: 100%;
-  max-width: 1100px;
-  margin: 0 auto;
-  display: flex !important;
-  justify-content: center;
-  align-items: center;
-  gap: 14px 18px;
-  flex-wrap: wrap;
-  padding-top: 10px;
-  border-top: 1px solid var(--border);
-  background: none;                  /* remove any gradient overlays */
-  z-index: 2;
-}
-
-/* Tidy labels/inputs */
-#global-podium .split-vis .vega-bindings label{
-  color: var(--muted);
-  font-size: .9rem;
-  margin-right: 6px;
-}
-#global-podium .split-vis .vega-bindings input[type="range"]{
-  width: min(560px, 70vw);
-  accent-color: var(--accent);
-}
-
-/* FINAL MAP LAYOUT TWEAK — ensure controls sit below map cleanly */
-#global-podium .split-vis {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: stretch;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  overflow: hidden;
-  padding: 16px;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, .35);
-}
-
-/* Let map fill available space without overlapping */
-#mapCombo {
-  flex: 1 1 auto;
-  display: block;
-  margin-bottom: 12px; /* creates a gap before controls */
-}
-
-/* Map embed sizing */
-#mapCombo .vega-embed,
-#mapCombo .vega-embed canvas,
-#mapCombo .vega-embed svg {
-  width: 100% !important;
-  height: auto !important;
-  max-width: 100%;
-}
-
-/* Center and separate controls under map */
-#global-podium .split-vis .vega-bindings {
-  flex: 0 0 auto;
-  display: flex !important;
-  justify-content: center;
-  align-items: center;
-  gap: 14px 18px;
-  flex-wrap: wrap;
-  padding-top: 10px;
-  border-top: 1px solid var(--border);
-  background: rgba(11, 12, 16, 0.4);
-  backdrop-filter: blur(4px);
-  border-radius: 0 0 12px 12px;
-}
-
-#global-podium .split-vis .vega-bindings label {
-  color: var(--muted);
-  font-size: 0.9rem;
-  margin-right: 6px;
-}
-
-#global-podium .split-vis .vega-bindings input[type="range"] {
-  width: min(560px, 70vw);
-  accent-color: var(--accent);
-}
-
-/* Map card: a touch taller, and a bigger gap before controls */
-#global-podium .split-vis{
-  min-height: 560px;              /* was ~420–520; gives legend breathing room */
-}
-
-#mapCombo{
-  flex: 1 1 560px;                /* encourages a taller map area */
-  margin-bottom: 18px;            /* bigger gap above the controls row */
-}
-
-/* controls row stays the same, just a hair more padding */
-#global-podium .split-vis .vega-bindings{
-  padding-top: 12px;
-}
-
-/* === FINAL fine-tune for map controls (Medal + Year) === */
-#global-podium .split-vis .vega-bindings {
-  display: flex !important;
-  justify-content: center;
-  align-items: flex-start;     /* top-align the first row */
-  flex-wrap: wrap;
-  gap: 20px 22px;              /* increase horizontal & vertical spacing */
-  padding-top: 16px;           /* push controls slightly down from map */
-  padding-bottom: 4px;
-  margin-top: 6px;             /* gentle gap from the legend */
-  border-top: 1px solid var(--border);
-  background: rgba(11, 12, 16, 0.45);
-  backdrop-filter: blur(4px);
-  border-radius: 0 0 12px 12px;
-}
-
-#global-podium .split-vis .vega-bindings label {
-  color: var(--muted);
-  font-size: 0.9rem;
-  margin-right: 6px;
-}
-
-/* Slightly lower the Year slider for balance */
-#global-podium .split-vis .vega-bindings input[type="range"] {
-  width: min(560px, 70vw);
-  accent-color: var(--accent);
-  margin-top: 4px;            /* extra downward nudge */
-}
-
-/* Map card uses vertical stacking */
-#global-podium .split-vis{
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 16px;
-}
-
-/* Map area grows; controls sit below */
-#mapCombo{
-  flex: 1 1 auto;
-  min-height: 420px;
-}
-
-.map-controls{
-  flex: 0 0 auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 20px 24px;
-  flex-wrap: wrap;
-  padding: 14px 12px 10px;
-  border-top: 1px solid var(--border);
-  background: rgba(11,12,16,.42);
-  backdrop-filter: blur(3px);
-  border-radius: 0 0 12px 12px;
-}
-
-/* keep slider tidy */
-.map-controls input[type="range"]{
-  width: min(560px, 70vw);
-  accent-color: var(--accent);
-}
-
-/* Remove blur + backdrop from map controls */
-.map-controls,
-#global-podium .split-vis .vega-bindings{
-  background: transparent !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  border-top: 1px solid transparent;   /* no visible line */
-  padding-top: 10px;                    /* small gap from legend */
-  margin-top: 0;
-}
-
-/* (Optional) if you still see any tint from older rules */
-#global-podium .split-vis .vega-bindings::before{ display:none !important; }
-
-/* Keep layout tidy */
-#global-podium .split-vis .vega-bindings{
-  gap: 14px 18px;
-}
-
-
-
   </style>
 </head>
 <body>
@@ -1044,7 +780,7 @@ html,body{background:var(--bg); color:var(--text);}
     <div class="hero-inner">
       <h1 class="headline">The Olympic Effect</h1>
       <p class="intro-text">
-        Every four years, the world gathers beneath one flame — nations competing not only for medals,
+        Every four years, the world gathers beneath one flame. Nations competing not only for medals,
         but for identity, pride, and place in history. Behind the ceremonies and record-breaking moments
         lies a quieter story: how geography, politics, and time itself shape who stands on the podium.
       </p>
@@ -1194,7 +930,7 @@ html,body{background:var(--bg); color:var(--text);}
     <h2 class="center-title">Champions define a nation’s legacy</h2>
 
     <p class="center-lede">
-      Each shape tells a story — the <strong>peaks of victory</strong> and <strong>shadows of endurance</strong>.
+      Each shape tells a story, the <strong>peaks of victory</strong> and <strong>shadows of endurance</strong>.
       Explore the top Olympians from each nation, where medals meet time, and dominance takes form.
     </p>
 
@@ -1330,7 +1066,7 @@ html,body{background:var(--bg); color:var(--text);}
 <section class="conclusion">
   <div class="conclusion-inner">
     <p class="conclusion-text">
-      The Games began as contests of strength and speed — but they’ve 
+      The Games began as contests of strength and speed, but they’ve 
       become a mirror of humanity’s own evolution.  
       Every line on these charts tells a story of ambition, opportunity,  
       and access — who was allowed to compete, who could afford to train,  

@@ -76,18 +76,23 @@
   ],
 
   "facet": {
-    "field": "Name",
-    "type": "nominal",
-    "columns": 3,
-    "title": null,
-    "header": {
-      "labelColor": "#ffffff",
-      "labelFontSize": 14,
-      "labelFontWeight": "bold",
-      "labelPadding": 6,
-      "labelOrient": "top"
-    }
-  },
+  "field": "Name",
+  "type": "nominal",
+  "columns": 3,
+  "title": "Top Olympians by Medal Performance",      
+  "titleAlign": "center",                             
+  "titleAnchor": "middle",                            
+  "titleFontSize": 18,
+  "titleFontWeight": "bold",
+  "titleColor": "#e8eaed",
+  "header": {
+    "labelColor": "#ffffff",
+    "labelFontSize": 14,
+    "labelFontWeight": "bold",
+    "labelPadding": 6,
+    "labelOrient": "top"
+  }
+},
 
   "spec": {
     "layer": [
