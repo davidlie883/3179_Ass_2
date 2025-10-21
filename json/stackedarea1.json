@@ -19,7 +19,7 @@
   ],
 
   "data": {
-    "url": "/code/code/datasets/athlete_events.csv",
+    "url": "https://raw.githubusercontent.com/davidlie883/3179_Ass_2/main/code/datasets/athlete_events.csv",
     "format": { "type": "csv", "parse": { "Year": "number" } }
   },
 
