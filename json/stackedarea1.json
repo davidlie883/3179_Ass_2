@@ -1,10 +1,10 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "background": "transparent",
-  "width": "container",
+  "width": 420,
   "height": 420,
-  "autosize": {"type": "fit", "contains": "padding"},
-  "padding": {"bottom": 28},
+  "autosize": { "type": "fit", "contains": "padding" },
+  "padding": { "bottom": 28 },
 
   "params": [
     {
@@ -18,29 +18,32 @@
     }
   ],
 
-  "data": { "url": "./code/datasets/athlete_events.csv", "format": { "type": "csv" } },
+  "data": {
+    "url": "/code/code/datasets/athlete_events.csv",
+    "format": { "type": "csv", "parse": { "Year": "number" } }
+  },
 
   "transform": [
     { "filter": "datum.Season == 'Summer'" },
-    { "filter": "NOCSel == 'All' ? true : datum.NOC == NOCSel" },
-    { "calculate": "toNumber(datum.Year)", "as": "YearNum" },
-    { "filter": "isValid(datum.Sex) && (datum.Sex == 'M' || datum.Sex == 'F')" }
+    { "filter": "(NOCSel == 'All') ? true : datum.NOC == NOCSel" },
+    { "filter": "datum.Sex == 'M' || datum.Sex == 'F'" }
   ],
 
-  "vconcat": [
+  "resolve": { "scale": { "x": "shared", "y": "independent", "color": "shared" } },
+
+  "hconcat": [
     {
       "title": { "text": "Participation share by gender over time", "color": "#ffffff", "fontWeight": 700, "anchor": "start" },
       "transform": [
-        { "aggregate": [{ "op": "distinct", "field": "Name", "as": "Athletes" }], "groupby": ["YearNum","Sex"] }
+        { "aggregate": [{ "op": "distinct", "field": "ID", "as": "Athletes" }], "groupby": ["Year","Sex"] }
       ],
       "mark": { "type": "area" },
       "encoding": {
-        "x": { "field": "YearNum", "type": "quantitative", "axis": { "gridColor": "#242a33", "labelColor": "#e8eaed", "title": null }, "sort": "ascending" },
+        "x": { "field": "Year", "type": "quantitative", "axis": { "gridColor": "#242a33", "labelColor": "#e8eaed", "title": null } },
         "y": { "field": "Athletes", "type": "quantitative", "stack": "normalize", "axis": { "format": ".0%", "gridColor": "#242a33", "labelColor": "#e8eaed", "title": "Share of participants" } },
         "color": { "field": "Sex", "type": "nominal", "scale": { "domain": ["F","M"], "range": ["#f2a7d3","#6aa9ff"] }, "legend": { "orient": "bottom", "direction": "horizontal", "labelColor": "#e8eaed", "title": "Gender", "titleColor": "#e8eaed" } },
-        "order": { "field": "YearNum", "type": "quantitative" },
         "tooltip": [
-          { "field": "YearNum", "type": "quantitative", "title": "Year" },
+          { "field": "Year", "type": "quantitative", "title": "Year" },
           { "field": "Sex", "title": "Gender" },
           { "field": "Athletes", "title": "Athletes" }
         ]
@@ -50,16 +53,15 @@
       "title": { "text": "Medal share by gender over time", "color": "#ffffff", "fontWeight": 700, "anchor": "start" },
       "transform": [
         { "filter": "datum.Medal == 'Gold' || datum.Medal == 'Silver' || datum.Medal == 'Bronze'" },
-        { "aggregate": [{ "op": "count", "as": "Medals" }], "groupby": ["YearNum","Sex"] }
+        { "aggregate": [{ "op": "count", "as": "Medals" }], "groupby": ["Year","Sex"] }
       ],
       "mark": { "type": "area" },
       "encoding": {
-        "x": { "field": "YearNum", "type": "quantitative", "axis": { "gridColor": "#242a33", "labelColor": "#e8eaed", "title": null }, "sort": "ascending" },
+        "x": { "field": "Year", "type": "quantitative", "axis": { "gridColor": "#242a33", "labelColor": "#e8eaed", "title": null } },
         "y": { "field": "Medals", "type": "quantitative", "stack": "normalize", "axis": { "format": ".0%", "gridColor": "#242a33", "labelColor": "#e8eaed", "title": "Share of medals" } },
         "color": { "field": "Sex", "type": "nominal", "scale": { "domain": ["F","M"], "range": ["#f2a7d3","#6aa9ff"] }, "legend": null },
-        "order": { "field": "YearNum", "type": "quantitative" },
         "tooltip": [
-          { "field": "YearNum", "type": "quantitative", "title": "Year" },
+          { "field": "Year", "type": "quantitative", "title": "Year" },
           { "field": "Sex", "title": "Gender" },
           { "field": "Medals", "title": "Medals" }
         ]

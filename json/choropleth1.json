@@ -1,9 +1,29 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-  "width": 950,
-  "height": 520,
+  "width": "container",
+  "height": 560,
+  "autosize": { "type": "fit", "contains": "padding" }, 
   "background": "transparent",
   "projection": { "type": "equalEarth" },
+  "padding": { "top": 10, "right": 10, "bottom": 110, "left": 10 },
+
+  "config": {
+  "view": { "stroke": null },
+  "legend": {
+  "orient": "top-right",          
+  "direction": "vertical",
+  "title": "Number of Medals",
+  "offset": 12,
+  "gradientLength": 160,          
+  "gradientThickness": 10,
+  "labelLimit": 80,
+  "labelFontSize": 11,
+  "titleFontSize": 12,
+  "titlePadding": 4,
+  "padding": 6
+}
+},
+
 
   "params": [
     {

@@ -1,0 +1,95 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "background": "transparent",
+  "width": "container",
+
+  "title": {
+    "text": "",
+    "color": "#ffffff",
+    "fontWeight": 700,
+    "anchor": "start"
+  },
+
+  "params": [
+    {
+      "name": "SeasonSel",
+      "value": "Summer",
+      "bind": { "input": "select", "options": ["Summer","Winter"], "name": "Season: " }
+    },
+    {
+      "name": "GenderSel",
+      "value": "All",
+      "bind": { "input": "select", "options": ["All","F","M"], "name": "Gender: " }
+    },
+    {
+      "name": "TopK",
+      "value": 15,
+      "bind": { "input": "range", "min": 5, "max": 30, "step": 1, "name": "Top countries: " }
+    },
+    {
+      "name": "YearMax",
+      "value": 2016,
+      "bind": { "input": "range", "min": 1896, "max": 2016, "step": 4, "name": "Up to year: " }
+    }
+  ],
+
+  "data": {
+    "url": "/code/code/datasets/athlete_events.csv",
+    "format": { "type": "csv", "parse": { "Year": "number" } }
+  },
+
+  "transform": [
+    { "filter": "(datum.Medal == 'Gold' || datum.Medal == 'Silver' || datum.Medal == 'Bronze')" },
+    { "filter": "datum.Season == SeasonSel" },
+    { "filter": "datum.Year <= YearMax" },
+    { "filter": "GenderSel == 'All' ? true : datum.Sex == GenderSel" },
+
+    { "aggregate": [{ "op": "count", "as": "Medals" }], "groupby": ["NOC","Sport"] },
+
+    { "joinaggregate": [{ "op": "sum", "field": "Medals", "as": "TotalByNOC" }], "groupby": ["NOC"] },
+    { "window": [{ "op": "rank", "as": "NocRank" }], "sort": [{ "field": "TotalByNOC", "order": "descending" }] },
+    { "filter": "datum.NocRank <= TopK" },
+
+    { "joinaggregate": [{ "op": "sum", "field": "Medals", "as": "TotalBySport" }], "groupby": ["Sport"] }
+  ],
+
+  "mark": { "type": "rect" },
+
+  "encoding": {
+    "x": {
+      "field": "Sport", "type": "nominal",
+      "sort": { "field": "TotalBySport", "order": "descending" },
+      "axis": { "labelColor": "#e8eaed", "title": null, "labelAngle": -40, "labelLimit": 140 }
+    },
+    "y": {
+      "field": "NOC", "type": "nominal",
+      "sort": { "field": "TotalByNOC", "order": "descending" },
+      "axis": { "labelColor": "#e8eaed", "title": null }
+    },
+    "color": {
+      "field": "Medals", "type": "quantitative",
+      "scale": { "scheme": "blues", "nice": false },
+      "legend": { "title": "Medals", "labelColor": "#e8eaed", "titleColor": "#e8eaed" }
+    },
+    "tooltip": [
+      { "field": "NOC", "title": "NOC" },
+      { "field": "Sport" },
+      { "field": "Medals" },
+      { "field": "TotalByNOC", "title": "Country total" },
+      { "field": "TotalBySport", "title": "Sport total" }
+    ]
+  },
+
+  "height": { "step": 22 },
+
+  "config": {
+    "view": { "stroke": null },
+    "axis": {
+      "domainColor": "#242a33",
+      "tickColor": "#242a33",
+      "gridColor": "#242a33",
+      "labelColor": "#e8eaed",
+      "titleColor": "#e8eaed"
+    }
+  }
+}

@@ -11,202 +11,245 @@
   <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
 
   <style>
-    :root{
-      --bg:#0b0c10; --text:#e8eaed; --muted:#a7b0be;
-      --card:#12141a; --border:#242a33; --accent:#6aa9ff; --maxw:980px;
-    }
-    *{box-sizing:border-box}
-    html,body{
-      margin:0; padding:0;
-      background:var(--bg); color:var(--text);
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
-    }
-
-    /* === HERO === */
-    .hero{
-      position:relative; min-height:100svh; overflow:hidden;
-      display:grid; place-items:center; text-align:center; padding:24px; background:var(--bg);
-    }
-    .hero-inner{ position:relative; z-index:2; max-width:1200px; margin-inline:auto; }
-    .headline{
-      margin:0; font-weight:800; line-height:1.02;
-      font-size:clamp(3.2rem,10vw,8rem); letter-spacing:-0.025em;
-      background:linear-gradient(180deg,#ffffff 0%,#eaf2ff 35%,#c8dcff 65%,#9ebeff 100%);
-      -webkit-background-clip:text; background-clip:text; color:transparent;
-      filter:drop-shadow(0 12px 36px rgba(106,169,255,0.28));
-    }
-    .intro-text{
-      margin:30px auto 0; max-width:820px;
-      font-size:clamp(1.05rem,2.3vw,1.35rem); line-height:1.75;
-      color:color-mix(in srgb, var(--muted) 85%, #fff 15%);
-    }
-    .down-cue{
-      position:absolute; bottom:18px; left:50%; translate:-50% 0;
-      color:var(--muted); font-size:.95rem; opacity:.9;
-    }
-
-    /* === PAGE 2 === */
-    .scene{
-      position:relative; min-height:100svh; overflow:hidden;
-      display:grid; place-items:center; padding:48px 18px; background:var(--bg);
-    }
-    .scene-inner{ position:relative; z-index:2; text-align:center; max-width:var(--maxw); }
-    .scene-line {
-      margin: 0 auto;
-      max-width: 720px;
-      color: #eaf2ff;
-      font-size: clamp(1.1rem, 2.4vw, 1.6rem);
-      line-height: 1.7;
-      font-weight: 500;
-      letter-spacing: 0.02em;
-      text-shadow: 0 2px 12px rgba(255,255,255,0.35),
-                   0 4px 28px rgba(106,169,255,0.35);
-      z-index: 3;
-    }
-    .scene::before{
-      content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
-      background:
-        radial-gradient(70% 55% at 50% 15%, rgba(106,169,255,.18), transparent 60%),
-        linear-gradient(180deg, rgba(0,0,0,.35) 0%, rgba(0,0,0,.55) 55%, rgba(0,0,0,.72) 100%),
-        radial-gradient(120% 90% at 50% 10%, rgba(0,0,0,0) 40%, rgba(0,0,0,.35) 80%, rgba(0,0,0,.55) 100%);
-    }
-    .bg-tile{
-      position:absolute; z-index:0;
-      left:var(--x); top:var(--y);
-      width:var(--size,160px); aspect-ratio:1/1;
-      transform:translate(-50%,-50%) rotate(var(--rot,0deg));
-      border-radius:12px; overflow:hidden;
-      opacity:var(--alpha,.55);               
-      filter:brightness(.92) blur(.3px);
-    }
-    .bg-tile img{ width:100%; height:100%; object-fit:cover; display:block; }
-
-    /* === PAGE 3: split layout (text left, chart right) === */
-    .section-split{
-      min-height:100svh;
-      display:grid;
-      grid-template-columns: 1fr;
-      gap:28px;
-      align-items:center;
-      padding:64px 18px;
-      background:var(--bg);
-    }
-    .split-inner{ max-width:1200px; margin:0 auto; width:100%; display:grid; grid-template-columns:1fr; gap:28px; }
-    .split-text .kicker{
-      text-transform:uppercase; letter-spacing:.14em; color:var(--muted);
-      font-size:.9rem; margin-bottom:14px;
-    }
-    .split-text .headline{
-      margin:0 0 12px 0; font-weight:800; line-height:1.06;
-      font-size: clamp(2rem, 6vw, 4.5rem);
-      letter-spacing:-0.02em; color:#fff;
-    }
-    .split-text .body{
-      color: var(--muted);
-      font-size: clamp(1rem, 2.1vw, 1.15rem);
-      line-height: 1.8;
-      max-width: 56ch;
-    }
-
-    /* chart card (responsive height) */
-    .split-vis{
-      background: var(--card);
-      border:1px solid var(--border);
-      border-radius:18px;
-      height: clamp(360px, 62svh, 820px);
-      padding: 0;
-      display:flex; align-items:stretch; justify-content:stretch;
-      box-shadow:0 8px 28px rgba(0,0,0,.35);
-    }
-    #mapCombo{ width:100%; height:100%; display:block; }
-
-    @media (min-width: 980px){
-  .split-inner{
-    grid-template-columns: 0.65fr 1.35fr; /* ⬅️ more space to the map */
-    align-items: center;
-    column-gap: 80px;                    /* a wider visual buffer between text and map */
-    max-width: 1500px;                   /* allows both sides to breathe */
-    margin-left: clamp(4%, 6vw, 80px);   /* slightly push content right */
-  }
+:root{
+  --bg:#0b0c10; --text:#e8eaed; --muted:#a7b0be;
+  --card:#12141a; --border:#242a33; --accent:#6aa9ff; --maxw:980px;
+}
+*{box-sizing:border-box}
+html,body{
+  margin:0; padding:0;
+  background:var(--bg); color:var(--text);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
 }
 
-@media (min-width: 1300px){
-  .split-inner{
-    grid-template-columns: 0.6fr 1.4fr;  /* ⬅️ even stronger map bias on big screens */
-    column-gap: 100px;
-    max-width: 1600px;
-    margin-left: clamp(6%, 8vw, 120px);  /* keeps it visually centered */
-  }
+/* === HERO === */
+.hero{
+  position:relative; min-height:100svh; overflow:hidden;
+  display:grid; place-items:center; text-align:center; padding:24px; background:var(--bg);
+}
+.hero-inner{ position:relative; z-index:2; max-width:1200px; margin-inline:auto; }
+.headline{
+  margin:0; font-weight:800; line-height:1.02;
+  font-size:clamp(3.2rem,10vw,8rem); letter-spacing:-0.025em;
+  background:linear-gradient(180deg,#ffffff 0%,#eaf2ff 35%,#c8dcff 65%,#9ebeff 100%);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  filter:drop-shadow(0 12px 36px rgba(106,169,255,0.28));
+}
+.intro-text{
+  margin:30px auto 0; max-width:820px;
+  font-size:clamp(1.05rem,2.3vw,1.35rem); line-height:1.75;
+  color:color-mix(in srgb, var(--muted) 85%, #fff 15%);
+}
+.down-cue{
+  position:absolute; bottom:18px; left:50%; translate:-50% 0;
+  color:var(--muted); font-size:.95rem; opacity:.9;
 }
 
-    @media (min-width: 1200px){
-      .split-inner{ max-width:1280px; grid-template-columns: 0.9fr 1.1fr; }
-    }
+/* === PAGE 2 === */
+.scene{
+  position:relative; min-height:100svh; overflow:hidden;
+  display:grid; place-items:center; padding:48px 18px; background:var(--bg);
+}
+.scene-inner{ position:relative; z-index:2; text-align:center; max-width:var(--maxw); }
+.scene-line {
+  margin: 0 auto;
+  max-width: 720px;
+  color: #eaf2ff;
+  font-size: clamp(1.1rem, 2.4vw, 1.6rem);
+  line-height: 1.7;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-shadow: 0 2px 12px rgba(255,255,255,0.35),
+               0 4px 28px rgba(106,169,255,0.35);
+  z-index: 3;
+}
+.scene::before{
+  content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
+  background:
+    radial-gradient(70% 55% at 50% 15%, rgba(106,169,255,.18), transparent 60%),
+    linear-gradient(180deg, rgba(0,0,0,.35) 0%, rgba(0,0,0,.55) 55%, rgba(0,0,0,.72) 100%),
+    radial-gradient(120% 90% at 50% 10%, rgba(0,0,0,0) 40%, rgba(0,0,0,.35) 80%, rgba(0,0,0,.55) 100%);
+}
+.bg-tile{
+  position:absolute; z-index:0;
+  left:var(--x); top:var(--y);
+  width:var(--size,160px); aspect-ratio:1/1;
+  transform:translate(-50%,-50%) rotate(var(--rot,0deg));
+  border-radius:12px; overflow:hidden;
+  opacity:var(--alpha,.55);               
+  filter:brightness(.92) blur(.3px);
+}
+.bg-tile img{ width:100%; height:100%; object-fit:cover; display:block; }
 
-  
-    /* === PAGE 4: Host Nation Advantage (graph left, text right) === */
-    .section-split.host { position: relative; overflow: hidden; padding: 72px 18px; }
-    .section-split.host::before{
-      content:""; position:absolute; inset:-20% -10% auto -10%; height:56%;
-      background: radial-gradient(60% 70% at 85% 20%, rgba(106,169,255,.22), transparent 60%);
-      filter: blur(30px); pointer-events:none;
-    }
-    .host .split-inner{ max-width:1200px; margin:0 auto; width:100%; display:grid; gap:28px; }
-    .host .tag{
-      display:inline-block; padding:8px 12px; border:1px solid var(--border);
-      color:var(--muted); border-radius:999px; font-size:.85rem; letter-spacing:.14em;
-      text-transform:uppercase; background:rgba(255,255,255,.02)
-    }
-    .host .headline{ margin:.6rem 0 .8rem; font-weight:800; line-height:1.06;
-      font-size: clamp(2rem, 6vw, 4.2rem); letter-spacing:-0.02em; color:#fff; }
-    .host .body{ color: var(--muted); font-size: clamp(1rem, 2.1vw, 1.15rem);
-      line-height:1.8; max-width: 58ch; }
-    .host .pills{ display:flex; gap:10px; flex-wrap:wrap; margin-top:16px }
-    .host .pill{ padding:6px 10px; border:1px solid var(--border); border-radius:999px;
-      font-size:.85rem; color:#cfe1ff; background:rgba(106,169,255,.08) }
-    .host .split-vis{ background: var(--card); border:1px solid var(--border); border-radius:18px;
-      height: clamp(360px, 60svh, 820px); padding: 0; display:flex; align-items:stretch; justify-content:stretch;
-      box-shadow:0 8px 28px rgba(0,0,0,.35); }
-    #hostBump{ width:100%; height:100%; display:block; }
-    @media (min-width: 980px){
-      .host .split-inner{ grid-template-columns: 1.05fr .95fr; align-items:center; }
-    }
+/* === PAGE 3: Global Podium (text left, map right) === */
+.section-split{
+  min-height:100svh;
+  display:grid;
+  grid-template-columns: 1fr;
+  align-items:center;
+  padding:64px 18px;
+  background:var(--bg);
+}
+.split-inner{
+  max-width:1400px;
+  margin:0 auto;
+  width:100%;
+  display:grid;
+  grid-template-columns:1fr;
+  gap:40px;
+  align-items:center;
+}
+@media (min-width: 900px){
+  .split-inner{ grid-template-columns:0.9fr 1.1fr; column-gap:60px; }
+}
+@media (min-width: 1200px){
+  .split-inner{ grid-template-columns:0.8fr 1.2fr; column-gap:80px; }
+}
 
-  /* === TRANSITION SCROLL SECTION === */
+.split-text .kicker{
+  text-transform:uppercase; letter-spacing:.14em; color:var(--muted);
+  font-size:.9rem; margin-bottom:14px;
+}
+.split-text .headline{
+  margin:0 0 12px 0; font-weight:800; line-height:1.06;
+  font-size: clamp(2rem, 6vw, 4.5rem);
+  letter-spacing:-0.02em; color:#fff;
+}
+.split-text .body{
+  color: var(--muted);
+  font-size: clamp(1rem, 2.1vw, 1.15rem);
+  line-height: 1.8;
+  max-width: 56ch;
+}
+
+/* === MAP CARD (robust layout) === */
+#global-podium .split-vis{
+  display: grid;                  /* 1x1 grid: chart and controls stack */
+  grid-template-rows: 1fr auto;   /* map fills, controls sit at bottom */
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  height: clamp(420px, 64svh, 860px);
+  padding: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 28px rgba(0,0,0,.35);
+}
+
+/* map container fills the first row */
+#mapCombo{
+  grid-row: 1 / 2;
+  width: 100%;
+  height: 100%;
+  min-height: 380px;
+  display: grid;                  /* ensure embed stretches */
+}
+
+/* make the embedded canvas/svg fill */
+#mapCombo > .vega-embed{
+  grid-area: 1 / 1;
+  width: 100%;
+  height: 100%;
+}
+#mapCombo .vega-embed canvas,
+#mapCombo .vega-embed svg{
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* controls: wherever Vega puts them, force them into row 2 */
+#mapCombo > .vega-bindings,
+#mapCombo .vega-bindings,
+#global-podium .split-vis > .vega-bindings{
+  grid-row: 2 / 3;                /* bottom row of the card */
+  align-self: end;
+  justify-self: center;
+
+  width: 100%;
+  max-width: 1100px;
+  display: flex !important;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 14px 18px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+
+  /* subtle legibility ramp */
+  background: linear-gradient(to top, rgba(11,12,16,.65), rgba(11,12,16,0));
+  backdrop-filter: blur(1px);
+}
+
+/* tidy labels/inputs */
+#global-podium .split-vis .vega-bindings label{
+  color: var(--muted);
+  font-size: .9rem;
+  margin-right: 6px;
+}
+#global-podium .split-vis .vega-bindings input[type="range"]{
+  width: min(560px, 70vw);
+  accent-color: var(--accent);
+}
+
+
+/* === PAGE 4: Host Advantage === */
+.section-split.host { position: relative; overflow: hidden; padding: 72px 18px; }
+.section-split.host::before{
+  content:""; position:absolute; inset:-20% -10% auto -10%; height:56%;
+  background: radial-gradient(60% 70% at 85% 20%, rgba(106,169,255,.22), transparent 60%);
+  filter: blur(30px); pointer-events:none;
+}
+.host .split-inner{ max-width:1200px; margin:0 auto; width:100%; display:grid; gap:28px; }
+.host .tag{
+  display:inline-block; padding:8px 12px; border:1px solid var(--border);
+  color:var(--muted); border-radius:999px; font-size:.85rem; letter-spacing:.14em;
+  text-transform:uppercase; background:rgba(255,255,255,.02)
+}
+.host .headline{ margin:.6rem 0 .8rem; font-weight:800; line-height:1.06;
+  font-size: clamp(2rem, 6vw, 4.2rem); letter-spacing:-0.02em; color:#fff; }
+.host .body{ color: var(--muted); font-size: clamp(1rem, 2.1vw, 1.15rem);
+  line-height:1.8; max-width: 58ch; }
+.host .pills{ display:flex; gap:10px; flex-wrap:wrap; margin-top:16px }
+.host .pill{ padding:6px 10px; border:1px solid var(--border); border-radius:999px;
+  font-size:.85rem; color:#cfe1ff; background:rgba(106,169,255,.08) }
+.host .split-vis{ background: var(--card); border:1px solid var(--border); border-radius:18px;
+  height: clamp(360px, 60svh, 820px); padding: 0; display:flex; align-items:stretch; justify-content:stretch;
+  box-shadow:0 8px 28px rgba(0,0,0,.35); }
+#hostBump{ width:100%; height:100%; display:block; }
+@media (min-width: 980px){
+  .host .split-inner{ grid-template-columns: 1.05fr .95fr; align-items:center; }
+}
+
+/* === TRANSITION SCROLL SECTIONS === */
 .scroll-bridge {
   position: relative;
-  min-height: 100svh;                /* full-screen height */
+  min-height: 100svh;
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--bg);
   overflow: hidden;
-  z-index: 2;                        /* ensures it sits above background gradients */
+  z-index: 2;
 }
-
 .bridge-inner {
   text-align: center;
   max-width: 900px;
   margin: 0 auto;
   padding: clamp(60px, 10vh, 120px) 18px;
 }
-
 .bridge-line {
   font-weight: 800;
-  font-size: clamp(2.4rem, 6.5vw, 4.8rem);  /* larger headline */
+  font-size: clamp(2.4rem, 6.5vw, 4.8rem);
   color: #ffffff;
   letter-spacing: -0.02em;
   line-height: 1.15;
   text-shadow: 0 4px 22px rgba(106,169,255,0.45);
   margin: 0;
 }
-
 .bridge-line span {
   color: var(--accent);
   filter: drop-shadow(0 0 10px rgba(106,169,255,0.6));
 }
-
-/* subtle moving glow background */
 .scroll-bridge::before {
   content: "";
   position: absolute;
@@ -217,21 +260,7 @@
   pointer-events: none;
   animation: pulseGlow 8s ease-in-out infinite alternate;
 }
-
-/* alt tint for the second bridge (slightly warmer) */
-.scroll-bridge.bridge-alt::before{
-  background:
-    radial-gradient(70% 60% at 50% 40%, rgba(255,140,80,.16), transparent 70%),
-    linear-gradient(180deg, rgba(0,0,0,.35) 0%, rgba(0,0,0,.82) 100%);
-}
 @keyframes pulseGlow{ 0%{opacity:.85; transform:scale(1)} 100%{opacity:1; transform:scale(1.05)} }
-
-
-@keyframes pulseGlow {
-  0% { opacity: 0.8; transform: scale(1); }
-  100% { opacity: 1; transform: scale(1.05); }
-}
-  
 
 /* === PAGE 5: centered layout === */
 .section-center {
@@ -281,6 +310,42 @@ input[type="range"]{
   accent-color: var(--accent);   
   height: 6px;
   cursor: pointer;
+}
+
+/* === Fix Page 5 controls layout (year slider + season dropdown) === */
+#new-openings .center-vis {
+  padding-bottom: 28px;                 /* room for controls inside the card */
+}
+
+/* put the controls inside the card, centered, with clear spacing */
+#new-openings .center-vis .vega-bindings {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 14px 18px;
+  margin: 14px 0 0;                     /* start just below the chart */
+  padding-top: 10px;
+  border-top: 1px solid var(--border);  /* subtle divider above controls */
+}
+
+/* keep labels tidy */
+#new-openings .center-vis .vega-bindings label {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-right: 6px;
+}
+
+/* cap slider width so it never overhangs into the caption */
+#new-openings .center-vis .vega-bindings input[type="range"]{
+  width: min(560px, 80vw);
+}
+
+/* space before the caption under the card */
+#new-openings .center-note {
+  margin-top: 40px;                      /* was tight; a touch more air */
+  padding-top: 8px;
+  border-top: none;  
 }
 
 /* === PAGE 6: radar chart top athletes === */
@@ -421,11 +486,21 @@ html,body{background:var(--bg); color:var(--text);}
 .center-lede{
   color:var(--muted);
   font-size: clamp(14px,1.7vw,16px);
-  margin:0 0 18px;
+  line-height: 1.9;                 /* a bit more air for short lines */
+  max-width: 42ch;                  /* ≈ 10 words per line */
+  margin: 10px auto 18px;           /* keep centered */
+  text-align: center;        /* <-- centers the text */
+
+    /* help wrapping + nicer breaks */
+  overflow-wrap: anywhere;
+  hyphens: auto;
+  letter-spacing: 0.01em;
 }
 .center-note{
-  color:var(--muted);
-  font-size:.9rem; margin-top:12px;
+  max-width: 42ch;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.85;
 }
 
 /* ===== VIS CONTAINER ===== */
@@ -482,6 +557,481 @@ html,body{background:var(--bg); color:var(--text);}
   .center-vis{ padding: 8px; }
 }
 
+/* linking 7 and 8 */
+.scroll-bridge.bridge-alt::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(70% 60% at 50% 40%, rgba(255,140,80,0.16), transparent 70%),
+    linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.85) 100%);
+  pointer-events: none;
+  animation: pulseGlow 8s ease-in-out infinite alternate;
+}
+
+.bridge-line {
+  font-weight: 800;
+  font-size: clamp(2.6rem, 6vw, 4.8rem);
+  line-height: 1.15;
+  text-align: center;
+  color: rgba(255,255,255,0.85);
+  text-shadow:
+    0 0 24px rgba(106,169,255,0.35),
+    0 0 40px rgba(106,169,255,0.15);
+}
+
+.bridge-line span {
+  color: #a8c8ff;
+  filter: drop-shadow(0 0 10px rgba(106,169,255,0.75))
+          drop-shadow(0 0 25px rgba(106,169,255,0.45));
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+
+/* page 8 */
+#gender-shift .center-note {
+  text-align: center;              /* keep visual balance under title */
+  max-width: 42ch;                 /* ≈ 9–10 words per line */
+  margin: 24px auto 0;             /* center horizontally */
+  line-height: 1.9;                /* give short lines breathing space */
+  letter-spacing: 0.01em;
+  color: color-mix(in srgb, var(--muted) 85%, #fff 15%);
+}
+
+#gender-shift .center-note p {
+  margin: 0 0 12px;
+}
+
+#gender-shift .center-note strong {
+  color: #e8eaed;
+}
+
+
+
+/* === BRIDGE: Between page 8 and 9 === */
+.scroll-bridge.bridge-glory::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(70% 60% at 50% 40%, rgba(106,169,255,0.12), transparent 70%),
+    linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.85) 100%);
+  pointer-events: none;
+  animation: pulseGlowBlue 9s ease-in-out infinite alternate;
+  filter: blur(2px);
+}
+
+.bridge-glory .bridge-line {
+  font-weight: 800;
+  font-size: clamp(2.6rem, 7vw, 5rem);
+  line-height: 1.15;
+  text-align: center;
+  color: rgba(255,255,255,0.7);
+  text-shadow:
+    0 0 24px rgba(106,169,255,0.3),
+    0 0 40px rgba(106,169,255,0.15);
+}
+
+.bridge-glory .bridge-line span {
+  display: inline-block;
+  color: #a8c8ff;
+  filter: drop-shadow(0 0 10px rgba(106,169,255,0.75))
+          drop-shadow(0 0 25px rgba(106,169,255,0.45));
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+/* subtle pulse to the glow */
+@keyframes pulseGlowBlue {
+  0% { opacity: 0.85; transform: scale(1); }
+  100% { opacity: 1; transform: scale(1.04); }
+}
+
+/* page 9 */
+#inequality .center-vis .vega-bindings{
+  display:flex; flex-wrap:wrap; justify-content:center; align-items:center;
+  gap:12px 16px; margin:12px 0 0; padding-top:10px; border-top:1px solid var(--border);
+}
+#inequality .center-vis .vega-bindings input[type="range"]{ width:min(520px,80vw); }
+
+/* === CONCLUSION SECTION === */
+/* === CONCLUSION SECTION (fixed line width) === */
+.conclusion {
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(60px, 12vh, 120px) 24px;
+  background: radial-gradient(80% 70% at 50% 30%, rgba(106,169,255,0.1), rgba(0,0,0,0.9));
+  text-align: center;
+  color: #e8eaed;
+  position: relative;
+  overflow: hidden;
+}
+
+.conclusion-inner {
+  max-width: 920px;
+  margin: 0 auto;
+  line-height: 2.2;
+  letter-spacing: 0.02em;
+}
+
+.conclusion-text {
+  font-size: clamp(1.2rem, 2.2vw, 1.6rem);
+  font-weight: 400;
+  color: color-mix(in srgb, var(--muted) 70%, #fff 30%);
+  text-shadow: 0 2px 20px rgba(106,169,255,0.25);
+  word-break: keep-all;
+  white-space: pre-line;
+
+  max-width: 65ch;
+  margin-inline: auto;
+}
+
+/* Gentle fade-up intro */
+.conclusion {
+  opacity: 0;
+  transform: translateY(40px);
+  animation: fadeUp 2s ease-out forwards;
+  animation-delay: 0.6s;
+}
+
+@keyframes fadeUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* final part */
+/* ===== PROJECT FOOTER ===== */
+.project-footer {
+  background: var(--bg);
+  color: var(--text);
+  padding: clamp(60px, 10vh, 100px) 24px;
+  display: flex;
+  justify-content: center;
+  border-top: 1px solid var(--border);
+}
+
+.footer-inner {
+  max-width: 1200px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;   /* left wider, right narrower */
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 60px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.footer-left {
+  flex: 1 1 420px;
+  max-width: 600px;
+}
+
+.footer-left h3 {
+  margin: 0 0 10px 0;
+  font-weight: 700;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  color: #ffffff;
+  text-shadow: 0 3px 16px rgba(106,169,255,0.4);
+}
+
+.footer-left p {
+  color: var(--muted);
+  font-size: clamp(1rem, 2vw, 1.15rem);
+  line-height: 1.8;
+  margin: 0;
+}
+
+.footer-right {
+  justify-self: end;                     /* pushes it to the right */
+  text-align: left;
+  font-size: 0.95rem;
+  color: var(--muted);
+  line-height: 1.7;
+  max-width: 360px;
+}
+
+.footer-right a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.footer-right a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 780px) {
+  .footer-inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* MAPPPPPPP */
+
+/* MAP: let Vega control the size (no forced 100% height) */
+#global-podium .split-vis{
+  position: relative;
+  padding: 16px 16px 96px;           /* reserve space for controls */
+  overflow: hidden;
+}
+
+#mapCombo{
+  display: block;
+  height: auto;                      /* don’t stretch the canvas */
+}
+
+/* don’t force the embed to 100% height; just cap width */
+#mapCombo .vega-embed,
+#mapCombo .vega-embed canvas,
+#mapCombo .vega-embed svg{
+  width: 100% !important;
+  height: auto !important;
+  max-width: 100%;
+}
+
+/* controls: catch both placements and pin to bottom */
+#mapCombo > .vega-bindings,
+#global-podium .split-vis > .vega-bindings,
+#global-podium .split-vis .vega-bindings{
+  position: absolute !important;
+  left: 16px; right: 16px; bottom: 16px;
+  display: flex !important;
+  justify-content: center; align-items: center;
+  gap: 14px 18px; flex-wrap: wrap;
+  padding-top: 10px; border-top: 1px solid var(--border);
+  background: linear-gradient(to top, rgba(11,12,16,.7), rgba(11,12,16,0));
+  z-index: 3;
+}
+
+#global-podium .split-vis .vega-bindings label{
+  color: var(--muted); font-size: .9rem; margin-right: 6px;
+}
+#global-podium .split-vis .vega-bindings input[type="range"]{
+  width: min(560px, 70vw); accent-color: var(--accent);
+}
+
+/* ==== MAP CONTROLS — final, robust layout ==== */
+
+/* Make the map card a 2-row grid:
+   row 1 = map, row 2 = controls  */
+#global-podium .split-vis{
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: 10px;
+  padding: 16px;                    /* no extra bottom padding needed */
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 8px 28px rgba(0,0,0,.35);
+}
+
+/* Map container fills row 1 */
+#mapCombo{
+  grid-row: 1 / 2;
+  width: 100%;
+  min-height: 380px;
+}
+
+/* Let Vega size the graphic — don't stretch its height */
+#mapCombo .vega-embed,
+#mapCombo .vega-embed canvas,
+#mapCombo .vega-embed svg{
+  width: 100% !important;
+  height: auto !important;
+  max-width: 100%;
+}
+
+/* Wherever Vega puts the controls, force them into row 2
+   and lay them out centered in one neat row (wrapping if needed). */
+#mapCombo + .vega-bindings,
+#mapCombo > .vega-bindings,
+#global-podium .split-vis > .vega-bindings{
+  grid-row: 2 / 3 !important;       /* bottom row of card */
+  position: static !important;      /* cancel any absolute rules */
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  gap: 14px 18px;
+  flex-wrap: wrap;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  background: none;                  /* remove any gradient overlays */
+  z-index: 2;
+}
+
+/* Tidy labels/inputs */
+#global-podium .split-vis .vega-bindings label{
+  color: var(--muted);
+  font-size: .9rem;
+  margin-right: 6px;
+}
+#global-podium .split-vis .vega-bindings input[type="range"]{
+  width: min(560px, 70vw);
+  accent-color: var(--accent);
+}
+
+/* FINAL MAP LAYOUT TWEAK — ensure controls sit below map cleanly */
+#global-podium .split-vis {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  overflow: hidden;
+  padding: 16px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, .35);
+}
+
+/* Let map fill available space without overlapping */
+#mapCombo {
+  flex: 1 1 auto;
+  display: block;
+  margin-bottom: 12px; /* creates a gap before controls */
+}
+
+/* Map embed sizing */
+#mapCombo .vega-embed,
+#mapCombo .vega-embed canvas,
+#mapCombo .vega-embed svg {
+  width: 100% !important;
+  height: auto !important;
+  max-width: 100%;
+}
+
+/* Center and separate controls under map */
+#global-podium .split-vis .vega-bindings {
+  flex: 0 0 auto;
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  gap: 14px 18px;
+  flex-wrap: wrap;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  background: rgba(11, 12, 16, 0.4);
+  backdrop-filter: blur(4px);
+  border-radius: 0 0 12px 12px;
+}
+
+#global-podium .split-vis .vega-bindings label {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-right: 6px;
+}
+
+#global-podium .split-vis .vega-bindings input[type="range"] {
+  width: min(560px, 70vw);
+  accent-color: var(--accent);
+}
+
+/* Map card: a touch taller, and a bigger gap before controls */
+#global-podium .split-vis{
+  min-height: 560px;              /* was ~420–520; gives legend breathing room */
+}
+
+#mapCombo{
+  flex: 1 1 560px;                /* encourages a taller map area */
+  margin-bottom: 18px;            /* bigger gap above the controls row */
+}
+
+/* controls row stays the same, just a hair more padding */
+#global-podium .split-vis .vega-bindings{
+  padding-top: 12px;
+}
+
+/* === FINAL fine-tune for map controls (Medal + Year) === */
+#global-podium .split-vis .vega-bindings {
+  display: flex !important;
+  justify-content: center;
+  align-items: flex-start;     /* top-align the first row */
+  flex-wrap: wrap;
+  gap: 20px 22px;              /* increase horizontal & vertical spacing */
+  padding-top: 16px;           /* push controls slightly down from map */
+  padding-bottom: 4px;
+  margin-top: 6px;             /* gentle gap from the legend */
+  border-top: 1px solid var(--border);
+  background: rgba(11, 12, 16, 0.45);
+  backdrop-filter: blur(4px);
+  border-radius: 0 0 12px 12px;
+}
+
+#global-podium .split-vis .vega-bindings label {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-right: 6px;
+}
+
+/* Slightly lower the Year slider for balance */
+#global-podium .split-vis .vega-bindings input[type="range"] {
+  width: min(560px, 70vw);
+  accent-color: var(--accent);
+  margin-top: 4px;            /* extra downward nudge */
+}
+
+/* Map card uses vertical stacking */
+#global-podium .split-vis{
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+}
+
+/* Map area grows; controls sit below */
+#mapCombo{
+  flex: 1 1 auto;
+  min-height: 420px;
+}
+
+.map-controls{
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px 24px;
+  flex-wrap: wrap;
+  padding: 14px 12px 10px;
+  border-top: 1px solid var(--border);
+  background: rgba(11,12,16,.42);
+  backdrop-filter: blur(3px);
+  border-radius: 0 0 12px 12px;
+}
+
+/* keep slider tidy */
+.map-controls input[type="range"]{
+  width: min(560px, 70vw);
+  accent-color: var(--accent);
+}
+
+/* Remove blur + backdrop from map controls */
+.map-controls,
+#global-podium .split-vis .vega-bindings{
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-top: 1px solid transparent;   /* no visible line */
+  padding-top: 10px;                    /* small gap from legend */
+  margin-top: 0;
+}
+
+/* (Optional) if you still see any tint from older rules */
+#global-podium .split-vis .vega-bindings::before{ display:none !important; }
+
+/* Keep layout tidy */
+#global-podium .split-vis .vega-bindings{
+  gap: 14px 18px;
+}
 
 
 
@@ -559,7 +1109,6 @@ html,body{background:var(--bg); color:var(--text);}
           From the first modern Games to today, Olympic glory has clustered around a few
           nations — and shifted with power, policy, and investment. On the right, we’ll map
           who commands the podium and highlight the contenders that surge in each era.
-          (Interactive map + top-10 bar will live here.)
         </p>
       </div>
 
@@ -583,7 +1132,7 @@ html,body{background:var(--bg); color:var(--text);}
         <span class="tag">The Host Nation Advantage</span>
         <h2 class="headline">When the flame burns at home</h2>
         <p class="body">
-          Hosting the Games is more than logistics — it’s a performance surge.  
+          Hosting the Games is more than logistics, it’s a performance surge.  
           Funding spikes, selection depth, familiar venues, and national pride  
           often lift medal counts well above average.  
           This view tracks each host’s medals across time, highlighting the surge when they host.
@@ -612,7 +1161,7 @@ html,body{background:var(--bg); color:var(--text);}
       <div class="center-kicker">Evolution of Competition</div>
       <h2 class="center-title">New sports, new champions.</h2>
       <p class="center-lede">
-        As the Olympic program evolves, fresh disciplines unlock opportunity — sometimes shifting
+        As the Olympic program evolves, fresh disciplines unlock opportunity. Sometimes, shifting
         the balance of power. This view previews where medals concentrate across sport groups,
         setting up a deeper dive into how newer events reshape the podium.
       </p>
@@ -660,6 +1209,16 @@ html,body{background:var(--bg); color:var(--text);}
   </div>
 </section>
 
+<!-- linking 7 and 8 -->
+ <section class="scroll-bridge bridge-alt">
+  <div class="bridge-inner">
+    <h2 class="bridge-line">
+      From <span>champions</span> who shaped history<br>
+      to the <span>voices</span> who changed it.
+    </h2>
+  </div>
+</section>
+
 <!-- PAGE 7 — Gender Shift -->
 <section class="section-center" id="gender-shift">
   <div class="center-inner">
@@ -671,8 +1230,157 @@ html,body{background:var(--bg); color:var(--text);}
     <figure class="center-vis" aria-label="Gender share trends">
       <div id="stackedArea1"></div>
     </figure>
+
+    <div class="center-note">
+<p>
+  The story of Olympic champions leads naturally to another form of triumph,
+  the collective rise of women on the world stage. From once-limited opportunities 
+  to near-equal footing, the Games have become a mirror of progress and inclusion. 
+  Two stacked area views below trace this evolution: the left panel charts the share 
+  of <em>participants</em> by gender, while the right follows the share of <em>medals</em> won. 
+  Use the country selector to explore how each nation’s journey compares to the global trend.
+</p>
+
+<p>
+  The steady climb of women’s participation marks one of the 
+  most profound shifts in Olympic history. As more events open and representation deepens, 
+  equality moves from aspiration to achievement — the next generation’s stage is truly shared.
+</p>
+
+</div>
   </div>
 </section>
+
+<section class="scroll-bridge bridge-glory">
+  <div class="bridge-inner">
+    <h2 class="bridge-line">
+      Behind every <span>dominant nation</span> lies another story, <br>
+      the rise of <span>women</span> redefining what power means.
+    </h2>
+  </div>
+</section>
+
+
+
+<!-- PAGE 8 — Specialization Heatmap -->
+<section class="section-center" id="specialization">
+  <div class="center-inner">
+    <div class="center-kicker">The Landscape of Power</div>
+    <h2 class="center-title">Who rules what?</h2>
+
+    <p class="center-lede">
+      A nation’s identity often anchors to certain arenas. This heatmap
+      traces where countries concentrate success across sports — switch
+      season, filter by gender, and focus on the top contenders.
+    </p>
+
+    <figure class="center-vis" aria-label="Medal specialization heatmap">
+      <div id="heatmap1"></div>
+    </figure>
+
+    <p class="center-note">
+      Darker tiles mark deeper dominance. But dominance also depends on
+      who gets to compete. As women’s events expand, new centers of
+      gravity emerge, setting up the story we explore next.
+    </p>
+  </div>
+</section>
+
+
+
+<section class="scroll-bridge bridge-glory">
+  <div class="bridge-inner">
+    <p class="bridge-line">
+      Glory isn’t evenly shared — <br>
+      <span>how much of the podium belongs to the few?</span>
+    </p>
+  </div>
+</section>
+
+
+<!-- PAGE 9 — Medal Inequality -->
+<section class="section-center" id="inequality">
+  <div class="center-inner">
+    <div class="center-kicker">Balance of Power</div>
+    <h2 class="center-title">How concentrated are Olympic medals?</h2>
+
+    <p class="center-lede">
+      Glory has never been spread evenly. For every nation that breaks through,
+      there are others watching from the sidelines — their efforts lost beneath
+      the weight of history and resources. The Lorenz curve visualizes this divide,
+      charting how Olympic success concentrates in the hands of a few.
+    </p>
+
+    <figure class="center-vis" aria-label="Medal inequality Lorenz curve">
+      <div id="lorenz1"></div>
+    </figure>
+
+    <p class="center-note">
+      Each curve compares the cumulative share of medals to the cumulative share of countries.
+      A perfect diagonal would mean equality, where all nations win equally. But the deeper
+      the curve bows, the more dominance belongs to a select few. Adjust the filters to see
+      how balance shifts across gender, season, and time, revealing whether the Games are
+      truly becoming more equal, or if power still rests with the same few flags.
+    </p>
+  </div>
+</section>
+
+<!-- conclusion -->
+ <!-- FINAL SECTION — Conclusion -->
+<section class="conclusion">
+  <div class="conclusion-inner">
+    <p class="conclusion-text">
+      The Games began as contests of strength and speed — but they’ve 
+      become a mirror of humanity’s own evolution.  
+      Every line on these charts tells a story of ambition, opportunity,  
+      and access — who was allowed to compete, who could afford to train,  
+      and whose triumphs the world chose to remember.  
+      <br><br>
+      Today, medals no longer measure only excellence, but equality —  
+      a reflection of how far the world has come in giving every nation  
+      and every athlete a chance to stand beneath the same flame.  
+      <br><br>
+      The Olympics, then, are more than sport. They are a map of us —  
+      of progress, pride, and the pursuit of belonging on a global stage.
+    </p>
+  </div>
+</section>
+
+<!-- ===== END SECTION ===== -->
+<section class="project-footer">
+  <div class="footer-inner">
+    <div class="footer-left">
+      <h3>For the Dreamers</h3>
+      <p>
+        Made for everyone who’s ever been inspired by the spirit of the Games —
+        the pursuit of excellence, unity, and the stories that connect nations across time.
+        May the flame keep burning, from one generation to the next.
+      </p>
+    </div>
+
+    <div class="footer-right">
+      <p><strong>Data Sources:</strong><br>
+        <a href="https://www.kaggle.com/datasets/heesoo37/120-years-of-olympic-history-athletes-and-results" target="_blank">120 Years of Olympic History</a><br>
+        <a href="https://www.kaggle.com/datasets/ulrikthygepedersen/which-sport-is-best" target="_blank">Which Sport Is Best</a><br>
+        <a href="https://www.kaggle.com/datasets/muhammadehsan02/126-years-of-historical-olympic-dataset" target="_blank">126 Years of Historical Olympic Data</a><br>
+        <a href="https://www.kaggle.com/code/heesoo37/olympic-history-data-a-thorough-analysis" target="_blank">Olympic Data Analysis Notebook</a>
+      </p>
+
+      <p><strong>Author:</strong> David Lie<br>
+         <strong>Date Created:</strong> 21 October 2025<br>
+         <strong>Visualisation Tools:</strong> Vega-Lite, Vega, HTML, CSS, JavaScript
+      </p>
+    </div>
+  </div>
+</section>
+
+
+
+<script>
+  vegaEmbed("#lorenz1", "./json/lorenz1.json", { actions:false, renderer:"canvas" })
+    .catch(err => console.error("Vega-Embed error (lorenz1):", err));
+</script>
+
 
 
 
@@ -715,6 +1423,19 @@ html,body{background:var(--bg); color:var(--text);}
   vegaEmbed("#stackedArea1", "./json/stackedarea1.json", { actions:false })
     .catch(err => console.error("Vega-Embed error (stackedarea1):", err));
 </script>
+
+<!-- === PAGE 8 Heatmap === -->
+<script>
+  vegaEmbed("#heatmap1", "./json/heatmap1.json", { actions:false, renderer:"canvas" })
+    .catch(err => console.error("Vega-Embed error (heatmap1):", err));
+</script>
+
+<!-- === PAGE 9: Lorenz Map === -->
+<script>
+  vegaEmbed("#lorenz1", "./json/lorenz1.json", { actions:false, renderer:"canvas" })
+    .catch(err => console.error("Vega-Embed error (lorenz1):", err));
+</script>
+
 
 
 </body>

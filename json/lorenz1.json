@@ -1,0 +1,83 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "background": "transparent",
+  "width": "container",
+  "params": [
+    {"name": "SeasonSel", "value": "Summer", "bind": {"input": "select", "options": ["Summer","Winter"], "name": "Season: "}},
+    {"name": "GenderSel", "value": "All", "bind": {"input": "select", "options": ["All","F","M"], "name": "Gender: "}},
+    {"name": "YearMax", "value": 2016, "bind": {"input": "range", "min": 1896, "max": 2016, "step": 4, "name": "Up to year: "}}
+  ],
+  "data": {
+    "url": "/code/code/datasets/athlete_events.csv",
+    "format": {"type": "csv", "parse": {"Year": "number"}}
+  },
+  "transform": [
+    {"filter": "(datum.Medal == 'Gold' || datum.Medal == 'Silver' || datum.Medal == 'Bronze')"},
+    {"filter": "datum.Season == SeasonSel"},
+    {"filter": "datum.Year <= YearMax"},
+    {"filter": "GenderSel == 'All' ? true : datum.Sex == GenderSel"},
+
+    {"aggregate": [{"op": "count", "as": "Medals"}], "groupby": ["NOC"]},
+
+    {"window": [{"op": "rank", "as": "rankAsc"}], "sort": [{"field": "Medals", "order": "ascending"}]},
+    {"joinaggregate": [{"op": "sum", "field": "Medals", "as": "TotalMedals"}]},
+    {"joinaggregate": [{"op": "count", "as": "CountryCount"}]},
+
+    {"window": [{"op": "sum", "field": "Medals", "as": "CumMedals"}], "sort": [{"field": "Medals", "order": "ascending"}]},
+    {"window": [{"op": "count", "as": "CumCountries"}], "sort": [{"field": "Medals", "order": "ascending"}]},
+
+    {"calculate": "datum.CumCountries / datum.CountryCount", "as": "PopShare"},
+    {"calculate": "datum.CumMedals / datum.TotalMedals", "as": "MedalShare"},
+
+    {"calculate": "datum.PopShare", "as": "EqualityX"},
+    {"calculate": "datum.PopShare", "as": "EqualityY"}
+  ],
+  "vconcat": [
+    {
+      "title": {"text": "Medal inequality among countries (Lorenz curve)", "color": "#ffffff", "fontWeight": 700, "anchor": "start"},
+      "layer": [
+        {
+          "mark": {"type": "line", "strokeDash": [5,4], "opacity": 0.6},
+          "encoding": {
+            "x": {"field": "EqualityX", "type": "quantitative", "axis": {"gridColor": "#242a33", "labelColor": "#e8eaed", "title": "Cumulative share of countries"}},
+            "y": {"field": "EqualityY", "type": "quantitative", "axis": {"gridColor": "#242a33", "labelColor": "#e8eaed", "title": "Cumulative share of medals"}},
+            "color": {"value": "#9fb3ff"}
+          }
+        },
+        {
+          "mark": {"type": "area", "line": {"color": "#6aa9ff"}, "opacity": 0.6},
+          "encoding": {
+            "x": {"field": "PopShare", "type": "quantitative"},
+            "y": {"field": "MedalShare", "type": "quantitative"},
+            "tooltip": [
+              {"field": "NOC", "title": "Last country added"},
+              {"field": "PopShare", "title": "Countries (cum)", "format": ".0%"},
+              {"field": "MedalShare", "title": "Medals (cum)", "format": ".0%"}
+            ],
+            "color": {"value": "#6aa9ff"}
+          }
+        }
+      ]
+    },
+    {
+      "height": 60,
+      "mark": {"type": "text"},
+      "transform": [
+        {"window": [{"op": "row_number", "as": "i"}], "sort": [{"field": "PopShare"}]},
+        {"window": [{"op": "lead", "field": "PopShare", "as": "x2"}, {"op": "lead", "field": "MedalShare", "as": "y2"}], "sort": [{"field": "PopShare"}]},
+        {"calculate": "(datum.x2==null || datum.y2==null) ? 0 : ((datum.MedalShare + datum.y2)/2) * (datum.x2 - datum.PopShare)", "as": "trap"},
+        {"joinaggregate": [{"op": "sum", "field": "trap", "as": "Area"}]},
+        {"calculate": "1 - 2 * datum.Area", "as": "Gini"}
+      ],
+      "encoding": {
+        "text": {"aggregate": {"argmax": "i", "field": "Gini"}, "type": "quantitative", "format": "Gini: .2f"},
+        "color": {"value": "#e8eaed"}
+      }
+    }
+  ],
+  "config": {
+    "view": {"stroke": null},
+    "axis": {"domainColor": "#242a33", "tickColor": "#242a33", "gridColor": "#242a33", "labelColor": "#e8eaed", "titleColor": "#e8eaed"},
+    "legend": {"labelColor": "#e8eaed", "titleColor": "#e8eaed"}
+  }
+}
