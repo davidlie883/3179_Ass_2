@@ -8,7 +8,7 @@
     {"name": "YearMax", "value": 2016, "bind": {"input": "range", "min": 1896, "max": 2016, "step": 4, "name": "Up to year: "}}
   ],
   "data": {
-    "url": "/code/code/datasets/athlete_events.csv",
+    "url": "https://raw.githubusercontent.com/davidlie883/3179_Ass_2/main/code/datasets/athlete_events.csv",
     "format": {"type": "csv", "parse": {"Year": "number"}}
   },
   "transform": [
@@ -16,31 +16,26 @@
     {"filter": "datum.Season == SeasonSel"},
     {"filter": "datum.Year <= YearMax"},
     {"filter": "GenderSel == 'All' ? true : datum.Sex == GenderSel"},
-
     {"aggregate": [{"op": "count", "as": "Medals"}], "groupby": ["NOC"]},
-
     {"window": [{"op": "rank", "as": "rankAsc"}], "sort": [{"field": "Medals", "order": "ascending"}]},
     {"joinaggregate": [{"op": "sum", "field": "Medals", "as": "TotalMedals"}]},
     {"joinaggregate": [{"op": "count", "as": "CountryCount"}]},
-
     {"window": [{"op": "sum", "field": "Medals", "as": "CumMedals"}], "sort": [{"field": "Medals", "order": "ascending"}]},
     {"window": [{"op": "count", "as": "CumCountries"}], "sort": [{"field": "Medals", "order": "ascending"}]},
-
     {"calculate": "datum.CumCountries / datum.CountryCount", "as": "PopShare"},
     {"calculate": "datum.CumMedals / datum.TotalMedals", "as": "MedalShare"},
-
     {"calculate": "datum.PopShare", "as": "EqualityX"},
     {"calculate": "datum.PopShare", "as": "EqualityY"}
   ],
   "vconcat": [
     {
       "title": {
-  "text": "How Olympic Success Concentrates Among Nations",
-  "anchor": "middle",
-  "color": "#e8eaed",
-  "fontSize": 16,
-  "fontWeight": "bold"
-},
+        "text": "How Olympic Success Concentrates Among Nations",
+        "anchor": "middle",
+        "color": "#e8eaed",
+        "fontSize": 16,
+        "fontWeight": "bold"
+      },
       "layer": [
         {
           "mark": {"type": "line", "strokeDash": [5,4], "opacity": 0.6},
